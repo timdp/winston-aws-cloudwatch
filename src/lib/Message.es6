@@ -1,5 +1,7 @@
 'use strict'
 
+import {isEmpty} from './util'
+
 class Message {
   constructor (date, level, message, meta) {
     this._date = date
@@ -28,10 +30,7 @@ class Message {
   _toCloudWatchMessage () {
     const meta = this.meta
     return `[${this.level.toUpperCase()}] ${this.message}` +
-      (!Message._isEmpty(meta) ? ' ' + JSON.stringify(meta, null, 2) : '')
-  }
-  static _isEmpty (obj) {
-    return (obj != null && Object.keys(obj).length > 0)
+      (isEmpty(meta) ? ' ' + JSON.stringify(meta, null, 2) : '')
   }
 }
 

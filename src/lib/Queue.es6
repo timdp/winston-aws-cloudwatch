@@ -4,6 +4,7 @@ import _debug from 'debug'
 const debug = _debug('winston-aws-cloudwatch/Queue')
 
 import defaults from 'defaults'
+import {delay} from './util'
 
 class Queue {
   constructor (worker, options) {
@@ -30,7 +31,7 @@ class Queue {
     }
     const remainingTime = this._computeRemainingTime()
     debug('delayedFlush: next flush in ' + remainingTime + ' ms')
-    this._flushing = Queue._delay(remainingTime)
+    this._flushing = delay(remainingTime)
       .then(() => this._flush())
       .then(() => this._flushing = null)
   }
@@ -53,16 +54,13 @@ class Queue {
   _onError (err) {
     debug('onError', {error: err})
     console.warn('Error: %s', err)
-    return Queue._delay(this._options.errorDelay)
+    return delay(this._options.errorDelay)
       .then(() => this._flush())
   }
   _computeRemainingTime () {
     const nextFlush = this._lastFlushStarted + this._options.flushInterval
     const now = new Date().getTime()
     return Math.max(0, Math.min(this._options.flushInterval, nextFlush - now))
-  }
-  static _delay (time) {
-    return new Promise(resolve => setTimeout(resolve, time))
   }
 }
 
