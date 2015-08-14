@@ -2,7 +2,17 @@
   "name": "winston-aws-cloudwatch",
   "version": "0.0.2",
   "description": "A Winston transport for Amazon CloudWatch.",
-  "keywords": [],
+  "keywords": [
+    "amazon",
+    "aws",
+    "cloudwatch",
+    "winston",
+    "log",
+    "logs",
+    "logging",
+    "cloud",
+    "saas"
+  ],
   "author": "Tim De Pauw <hi@tmdpw.eu> (https://tmdpw.eu/)",
   "engines": {
     "node": ">=0.10.0"
