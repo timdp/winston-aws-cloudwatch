@@ -14,7 +14,7 @@ class CloudWatchTransport extends Transport {
     this._queue = new Queue(this._worker)
   }
   log (level, msg, meta, callback) {
-    this._queue.push(new Message(level, msg, meta))
+    this._queue.push(new Message(new Date(), level, msg, meta))
     callback(null, true)
   }
 }
