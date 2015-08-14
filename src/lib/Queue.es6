@@ -28,10 +28,7 @@ class Queue {
       debug('delayedFlush: already flushing')
       return
     }
-    const nextFlush = this._lastFlushStarted + this._options.flushInterval
-    const now = new Date().getTime()
-    const remainingTime = Math.max(0, Math.min(this._options.flushInterval,
-      nextFlush - now))
+    const remainingTime = this._computeRemainingTime()
     debug('delayedFlush: next flush in ' + remainingTime + ' ms')
     this._flushing = Queue._delay(remainingTime)
       .then(() => this._flush())
@@ -58,6 +55,11 @@ class Queue {
     console.warn('Error: %s', err)
     return Queue._delay(this._options.errorDelay)
       .then(() => this._flush())
+  }
+  _computeRemainingTime () {
+    const nextFlush = this._lastFlushStarted + this._options.flushInterval
+    const now = new Date().getTime()
+    return Math.max(0, Math.min(this._options.flushInterval, nextFlush - now))
   }
   static _delay (time) {
     return new Promise(resolve => setTimeout(resolve, time))
