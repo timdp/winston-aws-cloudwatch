@@ -21,13 +21,17 @@ class Message {
   }
   toCloudWatchEvent () {
     return {
-      message: [
-        this.level,
-        this.message,
-        JSON.stringify(this.meta, null, '  ')
-      ].join(' - '),
+      message: this._toCloudWatchMessage(),
       timestamp: this.date.getTime()
     }
+  }
+  _toCloudWatchMessage () {
+    const meta = this.meta
+    return `[${this.level.toUpperCase()}] ${this.message}` +
+      (!Message._isEmpty(meta) ? ' ' + JSON.stringify(meta, null, 2) : '')
+  }
+  static _isEmpty (obj) {
+    return (obj != null && Object.keys(obj).length > 0)
   }
 }
 
