@@ -1,11 +1,11 @@
 'use strict'
 
-import winston from 'winston'
+import {Transport} from 'winston'
 import Message from './lib/Message'
 import Queue from './lib/Queue'
 import Worker from './lib/Worker'
 
-class CloudWatchTransport extends winston.Transport {
+class CloudWatchTransport extends Transport {
   constructor (options) {
     super()
     this._worker = new Worker(options.logGroupName, options.logStreamName, {
