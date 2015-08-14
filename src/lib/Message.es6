@@ -24,7 +24,7 @@ class Message {
   toCloudWatchEvent () {
     return {
       message: this._toCloudWatchMessage(),
-      timestamp: this.date.getTime()
+      timestamp: +this.date
     }
   }
   _toCloudWatchMessage () {

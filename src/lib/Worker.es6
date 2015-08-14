@@ -12,22 +12,60 @@ class Worker {
     debug('constructor', {logGroupName, logStreamName, options})
     this._logGroupName = logGroupName
     this._logStreamName = logStreamName
-    this._options = defaults(options, {awsConfig: null})
-    this._sequenceToken = null
+    this._options = defaults(options, {
+      awsConfig: null,
+      maxSequenceTokenAge: -1
+    })
+    this._sequenceTokenInfo = null
     this._client = new AWS.CloudWatchLogs(this._options.awsConfig)
   }
   process (batch) {
     debug('process', {batch})
+    return this._getSequenceToken()
+      .then(sequenceToken => this._putLogEvents(batch, sequenceToken))
+      .then(({nextSequenceToken}) => this._storeSequenceToken(nextSequenceToken))
+  }
+  _putLogEvents (batch, sequenceToken) {
+    debug('putLogEvents', {batch, sequenceToken})
     const params = {
       logGroupName: this._logGroupName,
       logStreamName: this._logStreamName,
       logEvents: batch.map(msg => msg.toCloudWatchEvent()),
-      sequenceToken: this._sequenceToken
+      sequenceToken
     }
     return ninvoke(this._client, 'putLogEvents', params)
-      .then(({nextSequenceToken}) => {
-        debug('nextSequenceToken: ' + nextSequenceToken)
-        this._sequenceToken = nextSequenceToken
+  }
+  _getSequenceToken () {
+    const now = +new Date()
+    const isStale = (!this._sequenceTokenInfo ||
+      this._sequenceTokenInfo.date + this._options.maxSequenceTokenAge < now)
+    return isStale ? this._fetchAndStoreSequenceToken() :
+      Promise.resolve(this._sequenceTokenInfo.sequenceToken)
+  }
+  _fetchAndStoreSequenceToken () {
+    debug('fetchSequenceToken')
+    return this._findLogStream()
+      .then(({uploadSequenceToken}) => uploadSequenceToken)
+      .then(sequenceToken => this._storeSequenceToken(sequenceToken))
+  }
+  _storeSequenceToken (sequenceToken) {
+    debug('storeSequenceToken', {sequenceToken})
+    const date = +new Date()
+    this._sequenceTokenInfo = {sequenceToken, date}
+    return sequenceToken
+  }
+  _findLogStream (nextToken) {
+    debug('findLogStream', {nextToken})
+    const params = {
+      logGroupName: this._logGroupName,
+      logStreamNamePrefix: this._logStreamName,
+      nextToken
+    }
+    return ninvoke(this._client, 'describeLogStreams', params)
+      .then(({logStreams, nextToken}) => {
+        const match = logStreams.filter(
+          ({logStreamName}) => (logStreamName === this._logStreamName)).shift()
+        return match || this._findLogStream(nextToken)
       })
   }
 }

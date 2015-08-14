@@ -40,7 +40,7 @@ class Queue {
       debug('flush: queue empty')
       return Promise.resolve()
     }
-    this._lastFlushStarted = new Date().getTime()
+    this._lastFlushStarted = +new Date()
     const batch = this._items.slice(0, this._options.batchSize)
     debug('flush: flushing ' + batch.length)
     return this._worker.process(batch)
@@ -53,13 +53,13 @@ class Queue {
   }
   _onError (err) {
     debug('onError', {error: err})
-    console.warn('Error: %s', err)
+    console.warn('Error: %s', err.stack || err)
     return delay(this._options.errorDelay)
       .then(() => this._flush())
   }
   _computeRemainingTime () {
     const nextFlush = this._lastFlushStarted + this._options.flushInterval
-    const now = new Date().getTime()
+    const now = +new Date()
     return Math.max(0, Math.min(this._options.flushInterval, nextFlush - now))
   }
 }
