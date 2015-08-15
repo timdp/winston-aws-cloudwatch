@@ -39,7 +39,6 @@ export default class Relay extends EventEmitter {
       return Promise.resolve()
     }
     const batch = this._queue.head(this._options.batchSize)
-    this._queue.lock()
     debug(`submit: submitting ${batch.length} item(s)`)
     return this._client.submit(batch)
       .then(() => this._onSubmitted(batch.length), err => this._onError(err))
@@ -47,13 +46,11 @@ export default class Relay extends EventEmitter {
   }
   _onSubmitted (num) {
     debug('onSubmitted', {num})
-    this._queue.unlock()
     this._queue.remove(num)
   }
   _onError (err) {
     debug('onError', {error: err})
     this.emit('error', err)
     return Promise.delay(this._options.errorDelay)
-      .then(() => this._queue.unlock())
   }
 }
