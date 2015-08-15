@@ -3,65 +3,49 @@
 import _debug from 'debug'
 const debug = _debug('winston-aws-cloudwatch/Queue')
 
-import defaults from 'defaults'
-import {delay} from './util'
+import {EventEmitter} from 'events'
 
-class Queue {
-  constructor (worker, options) {
-    debug('constructor', {worker, options})
-    this._worker = worker
-    this._options = defaults(options, {
-      flushInterval: 2000,
-      errorDelay: 1000,
-      batchSize: 20
-    })
-    this._items = []
-    this._flushing = null
-    this._lastFlushStarted = 0
+export default class Queue extends EventEmitter {
+  constructor () {
+    super()
+    this._contents = []
+    this._locked = false
+  }
+  get size () {
+    return this._contents.length
+  }
+  get locked () {
+    return this._locked
   }
   push (item) {
     debug('push', {item})
-    this._items.push(item)
-    this._delayedFlush()
+    this._contents.push(item)
+    this.emit('push', item)
   }
-  _delayedFlush () {
-    if (this._flushing) {
-      debug('delayedFlush: already flushing')
-      return
+  head (num) {
+    debug('head', {num})
+    if (this._locked) {
+      throw new Error('Not allowed')
     }
-    const remainingTime = this._computeRemainingTime()
-    debug('delayedFlush: next flush in ' + remainingTime + ' ms')
-    this._flushing = delay(remainingTime)
-      .then(() => this._flush())
-      .then(() => this._flushing = null)
+    return this._contents.slice(0, num)
   }
-  _flush () {
-    if (this._items.length === 0) {
-      debug('flush: queue empty')
-      return Promise.resolve()
+  remove (num) {
+    debug('remove', {num})
+    if (this._locked) {
+      throw new Error('Not allowed')
     }
-    this._lastFlushStarted = +new Date()
-    const batch = this._items.slice(0, this._options.batchSize)
-    debug('flush: flushing ' + batch.length)
-    return this._worker.process(batch)
-      .then(() => this._onProcessed(), err => this._onError(err))
+    this._contents.splice(0, num)
   }
-  _onProcessed () {
-    debug('onProcessed')
-    this._items.splice(0, this._options.batchSize)
-    return this._flush()
+  lock () {
+    if (this._locked) {
+      throw new Error('Already locked')
+    }
+    this._locked = true
   }
-  _onError (err) {
-    debug('onError', {error: err})
-    console.warn('Error: %s', err.stack || err)
-    return delay(this._options.errorDelay)
-      .then(() => this._flush())
-  }
-  _computeRemainingTime () {
-    const nextFlush = this._lastFlushStarted + this._options.flushInterval
-    const now = +new Date()
-    return Math.max(0, Math.min(this._options.flushInterval, nextFlush - now))
+  unlock () {
+    if (!this._locked) {
+      throw new Error('Not locked')
+    }
+    this._locked = false
   }
 }
-
-export default Queue

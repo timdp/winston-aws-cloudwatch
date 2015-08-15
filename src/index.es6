@@ -1,20 +1,21 @@
 'use strict'
 
 import {Transport} from 'winston'
-import Message from './lib/Message'
+import CloudWatchClient from './lib/CloudWatchClient'
+import LogItem from './lib/LogItem'
+import Relay from './lib/Relay'
 import Queue from './lib/Queue'
-import Worker from './lib/Worker'
 
 class CloudWatchTransport extends Transport {
-  constructor (options) {
+  constructor ({logGroupName, logStreamName, awsConfig}) {
     super()
-    this._worker = new Worker(options.logGroupName, options.logStreamName, {
-      awsConfig: options.awsConfig
-    })
-    this._queue = new Queue(this._worker)
+    this._queue = new Queue()
+    const client = new CloudWatchClient(logGroupName, logStreamName, {awsConfig})
+    const relay = new Relay(client)
+    relay.start(this._queue)
   }
   log (level, msg, meta, callback) {
-    this._queue.push(new Message(+new Date(), level, msg, meta))
+    this._queue.push(new LogItem(+new Date(), level, msg, meta))
     callback(null, true)
   }
 }

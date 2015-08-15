@@ -1,13 +1,14 @@
 'use strict'
 
 import _debug from 'debug'
-const debug = _debug('winston-aws-cloudwatch/Worker')
+const debug = _debug('winston-aws-cloudwatch/CloudWatchClient')
 
-import defaults from 'defaults'
 import AWS from 'aws-sdk'
 import {ninvoke} from 'q'
+import defaults from 'defaults'
+import {find, isEmpty} from './util'
 
-class Worker {
+export default class CloudWatchClient {
   constructor (logGroupName, logStreamName, options) {
     debug('constructor', {logGroupName, logStreamName, options})
     this._logGroupName = logGroupName
@@ -19,8 +20,8 @@ class Worker {
     this._sequenceTokenInfo = null
     this._client = new AWS.CloudWatchLogs(this._options.awsConfig)
   }
-  process (batch) {
-    debug('process', {batch})
+  submit (batch) {
+    debug('submit', {batch})
     return this._getSequenceToken()
       .then(sequenceToken => this._putLogEvents(batch, sequenceToken))
       .then(({nextSequenceToken}) => this._storeSequenceToken(nextSequenceToken))
@@ -30,7 +31,7 @@ class Worker {
     const params = {
       logGroupName: this._logGroupName,
       logStreamName: this._logStreamName,
-      logEvents: batch.map(msg => msg.toCloudWatchEvent()),
+      logEvents: batch.map(CloudWatchClient._toCloudWatchEvent),
       sequenceToken
     }
     return ninvoke(this._client, 'putLogEvents', params)
@@ -63,11 +64,20 @@ class Worker {
     }
     return ninvoke(this._client, 'describeLogStreams', params)
       .then(({logStreams, nextToken}) => {
-        const match = logStreams.filter(
-          ({logStreamName}) => (logStreamName === this._logStreamName)).shift()
+        const match = find(logStreams,
+          ({logStreamName}) => (logStreamName === this._logStreamName))
         return match || this._findLogStream(nextToken)
       })
   }
+  static _toCloudWatchEvent (item) {
+    return {
+      message: CloudWatchClient._toCloudWatchMessage(item),
+      timestamp: item.date
+    }
+  }
+  static _toCloudWatchMessage (item) {
+    const meta = isEmpty(item.meta) ? '' :
+      ' ' + JSON.stringify(item.meta, null, 2)
+    return `[${item.level.toUpperCase()}] ${item.message}${meta}`
+  }
 }
-
-export default Worker
