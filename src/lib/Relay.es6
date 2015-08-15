@@ -39,9 +39,10 @@ export default class Relay extends EventEmitter {
       return Promise.resolve()
     }
     const batch = this._queue.head(this._options.batchSize)
-    debug(`submit: submitting ${batch.length} item(s)`)
+    const num = batch.length
+    debug(`submit: submitting ${num} item(s)`)
     return this._client.submit(batch)
-      .then(() => this._onSubmitted(batch.length), err => this._onError(err))
+      .then(() => this._onSubmitted(num), err => this._onError(err))
       .then(() => this._scheduleSubmission())
   }
   _onSubmitted (num) {
