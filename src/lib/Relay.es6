@@ -3,8 +3,8 @@
 import _debug from 'debug'
 const debug = _debug('winston-aws-cloudwatch/Relay')
 
+import Promise from 'bluebird'
 import defaults from 'defaults'
-import {delay} from './util'
 
 export default class Relay {
   constructor (client, options) {
@@ -33,7 +33,7 @@ export default class Relay {
     }
     const remainingTime = this._computeRemainingTime()
     debug('onQueuePush: submitting in ' + remainingTime + ' ms')
-    this._submitting = delay(remainingTime)
+    this._submitting = Promise.delay(remainingTime)
       .then(() => this._submit())
       .then(() => this._submitting = null)
   }
@@ -62,7 +62,7 @@ export default class Relay {
   _onError (err) {
     debug('onError', {error: err})
     console.warn('Error: %s', err.stack || err)
-    return delay(this._options.errorDelay)
+    return Promise.delay(this._options.errorDelay)
       .then(() => this._queue.unlock())
       .then(() => this._submit())
   }

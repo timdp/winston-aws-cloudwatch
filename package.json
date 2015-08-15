@@ -20,9 +20,10 @@
   "dependencies": {
     "aws-sdk": "^2.1.45",
     "babel-runtime": "^5.5.4",
+    "bluebird": "^2.9.34",
     "debug": "^2.2.0",
     "defaults": "^1.0.2",
-    "q": "^1.4.1",
+    "lodash": "^3.10.1",
     "winston": "^1.0.1"
   },
   "devDependencies": {

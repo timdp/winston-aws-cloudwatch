@@ -4,9 +4,9 @@ import _debug from 'debug'
 const debug = _debug('winston-aws-cloudwatch/CloudWatchClient')
 
 import AWS from 'aws-sdk'
-import {ninvoke} from 'q'
+import Promise from 'bluebird'
 import defaults from 'defaults'
-import {find, isEmpty} from './util'
+import {find, isEmpty} from 'lodash'
 
 export default class CloudWatchClient {
   constructor (logGroupName, logStreamName, options) {
@@ -18,7 +18,8 @@ export default class CloudWatchClient {
       maxSequenceTokenAge: -1
     })
     this._sequenceTokenInfo = null
-    this._client = new AWS.CloudWatchLogs(this._options.awsConfig)
+    const client = new AWS.CloudWatchLogs(this._options.awsConfig)
+    this._client = Promise.promisifyAll(client)
   }
   submit (batch) {
     debug('submit', {batch})
@@ -34,7 +35,7 @@ export default class CloudWatchClient {
       logEvents: batch.map(CloudWatchClient._toCloudWatchEvent),
       sequenceToken
     }
-    return ninvoke(this._client, 'putLogEvents', params)
+    return this._client.putLogEventsAsync(params)
   }
   _getSequenceToken () {
     const now = +new Date()
@@ -62,7 +63,7 @@ export default class CloudWatchClient {
       logStreamNamePrefix: this._logStreamName,
       nextToken
     }
-    return ninvoke(this._client, 'describeLogStreams', params)
+    return this._client.describeLogStreamsAsync(params)
       .then(({logStreams, nextToken}) => {
         const match = find(logStreams,
           ({logStreamName}) => (logStreamName === this._logStreamName))
