@@ -47,8 +47,7 @@ export default class CloudWatchClient {
   _fetchAndStoreSequenceToken () {
     debug('fetchSequenceToken')
     return this._findLogStream()
-      .then(({uploadSequenceToken}) => uploadSequenceToken)
-      .then(sequenceToken => this._storeSequenceToken(sequenceToken))
+      .then(({uploadSequenceToken}) => this._storeSequenceToken(uploadSequenceToken))
   }
   _storeSequenceToken (sequenceToken) {
     debug('storeSequenceToken', {sequenceToken})
