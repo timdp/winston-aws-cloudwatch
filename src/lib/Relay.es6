@@ -4,10 +4,13 @@ import _debug from 'debug'
 const debug = _debug('winston-aws-cloudwatch/Relay')
 
 import Promise from 'bluebird'
+import Bottleneck from 'bottleneck'
 import defaults from 'defaults'
+import {EventEmitter} from 'events'
 
-export default class Relay {
+export default class Relay extends EventEmitter {
   constructor (client, options) {
+    super()
     debug('constructor', {client, options})
     this._client = client
     this._options = defaults(options, {
@@ -22,53 +25,35 @@ export default class Relay {
       throw new Error('Already started')
     }
     this._queue = queue
-    this._submitting = null
-    this._lastSubmitted = -1
-    this._queue.on('push', () => this._onQueuePush())
+    this._limiter = new Bottleneck(1, this._options.submissionInterval, 1)
+    // Initial call to postpone first submission
+    this._scheduleSubmission()
+    this._queue.on('push', () => this._scheduleSubmission())
   }
-  _onQueuePush () {
-    if (this._submitting) {
-      debug('onQueuePush: submission already in progress')
-      return
-    }
-    const remainingTime = this._computeRemainingTime()
-    debug('onQueuePush: submitting in ' + remainingTime + ' ms')
-    this._submitting = Promise.delay(remainingTime)
-      .then(() => this._submit())
-      .then(() => this._submitting = null)
+  _scheduleSubmission () {
+    this._limiter.schedule(() => this._submit())
   }
   _submit () {
     if (this._queue.size === 0) {
       debug('submit: queue empty')
       return Promise.resolve()
     }
-    this._lastSubmitted = +new Date()
     const batch = this._queue.head(this._options.batchSize)
     this._queue.lock()
     debug(`submit: submitting ${batch.length} item(s)`)
     return this._client.submit(batch)
       .then(() => this._onSubmitted(batch.length), err => this._onError(err))
-      .catch(err => {
-        console.error('Unexpected error: %s', err)
-        throw err
-      })
+      .then(() => this._scheduleSubmission())
   }
   _onSubmitted (num) {
     debug('onSubmitted', {num})
     this._queue.unlock()
     this._queue.remove(num)
-    return this._submit()
   }
   _onError (err) {
     debug('onError', {error: err})
-    console.warn('Error: %s', err.stack || err)
+    this.emit('error', err)
     return Promise.delay(this._options.errorDelay)
       .then(() => this._queue.unlock())
-      .then(() => this._submit())
-  }
-  _computeRemainingTime () {
-    const interval = this._options.submissionInterval
-    return (this._lastSubmitted < 0) ? interval :
-      Math.max(0, this._lastSubmitted + interval - new Date())
   }
 }
