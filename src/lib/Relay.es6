@@ -63,6 +63,7 @@ export default class Relay {
     debug('onError', {error: err})
     console.warn('Error: %s', err.stack || err)
     return delay(this._options.errorDelay)
+      .then(() => this._queue.unlock())
       .then(() => this._submit())
   }
   _computeRemainingTime () {
