@@ -15,7 +15,6 @@ export default class Relay extends EventEmitter {
     this._client = client
     this._options = defaults(options, {
       submissionInterval: 2000,
-      errorDelay: 1000,
       batchSize: 20
     })
   }
@@ -51,6 +50,5 @@ export default class Relay extends EventEmitter {
   _onError (err) {
     debug('onError', {error: err})
     this.emit('error', err)
-    return Promise.delay(this._options.errorDelay)
   }
 }
