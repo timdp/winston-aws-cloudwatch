@@ -3,7 +3,6 @@
 import _debug from 'debug'
 const debug = _debug('winston-aws-cloudwatch/Relay')
 
-import Promise from 'bluebird'
 import Bottleneck from 'bottleneck'
 import defaults from 'defaults'
 import Queue from './Queue'
