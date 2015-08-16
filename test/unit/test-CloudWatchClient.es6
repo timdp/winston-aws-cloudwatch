@@ -46,7 +46,7 @@ const strategies = {
 const createClient = (options, streamsStrategy = strategies.default) => {
   const client = new CloudWatchClient(logGroupName, logStreamName, options)
   sinon.stub(client._client, 'putLogEventsAsync')
-    .returns(Promise.resolve({nextSequenceToken: '42'}))
+    .returns(Promise.resolve({nextSequenceToken: 'token42'}))
   const stub = sinon.stub(client._client, 'describeLogStreamsAsync')
   streamsStrategy(stub)
   return client
