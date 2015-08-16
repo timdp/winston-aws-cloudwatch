@@ -9,6 +9,7 @@ import LogItem from '../../src/lib/LogItem'
 const logGroupName = 'testGroup'
 const logStreamName = 'testStream'
 
+let tokens = 0
 let streams = 0
 
 const mapRequest = (stub, includeExpected, token, nextToken) => {
@@ -25,18 +26,21 @@ const mapRequest = (stub, includeExpected, token, nextToken) => {
   }
 }
 
+const mapRequests = (stub, pages, includeExpected) => {
+  let prevToken = null
+  for (let i = 0; i < pages - 1; ++i) {
+    let token = 'token' + ++tokens
+    mapRequest(stub, false, prevToken, token)
+    prevToken = token
+  }
+  mapRequest(stub, includeExpected, prevToken)
+}
+
 const strategies = {
   default: stub => mapRequest(stub, true),
   notFound: stub => mapRequest(stub, false),
-  paged: stub => {
-    mapRequest(stub, false, null, 'token1')
-    mapRequest(stub, false, 'token1', 'token2')
-    mapRequest(stub, true, 'token2')
-  },
-  pagedNotFound: stub => {
-    mapRequest(stub, false, null, 'token3')
-    mapRequest(stub, false, 'token3')
-  }
+  paged: stub => mapRequests(stub, 3, true),
+  pagedNotFound: stub => mapRequests(stub, 3, false)
 }
 
 const createClient = (options, streamsStrategy = strategies.default) => {
