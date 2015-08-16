@@ -9,24 +9,30 @@ import LogItem from '../../src/lib/LogItem'
 const logGroupName = 'testGroup'
 const logStreamName = 'testStream'
 
+const mapRequest = (stub, token, suffixes, nextToken) => {
+  const res = Promise.resolve({
+    logStreams: suffixes.map(suf => ({logStreamName: logStreamName + suf})),
+    nextToken
+  })
+  if (token) {
+    stub.withArgs(sinon.match({nextToken: token}))
+      .returns(res)
+  } else {
+    stub.returns(res)
+  }
+}
+
 const strategies = {
-  default: stub => {
-    stub.returns(Promise.resolve({logStreams: [{logStreamName}]}))
-  },
+  default: stub => mapRequest(stub, null, [''], null),
+  notFound: stub => mapRequest(stub, null, ['1'], null),
   paged: stub => {
-    stub.returns(Promise.resolve({nextToken: '1', logStreams: []}))
-    stub.withArgs(sinon.match({nextToken: '1'}))
-      .returns(Promise.resolve({nextToken: '2', logStreams: []}))
-    stub.withArgs(sinon.match({nextToken: '2'}))
-      .returns(Promise.resolve({logStreams: [{logStreamName}]}))
-  },
-  notFound: stub => {
-    stub.returns(Promise.resolve({logStreams: [{logStreamName: 'someOther'}]}))
+    mapRequest(stub, null, ['1', '2'], 'token1')
+    mapRequest(stub, 'token1', ['3', '4'], 'token2')
+    mapRequest(stub, 'token2', ['5', ''], null)
   },
   pagedNotFound: stub => {
-    stub.returns(Promise.resolve({nextToken: '3', logStreams: []}))
-    stub.withArgs(sinon.match({nextToken: '3'}))
-      .returns(Promise.resolve({logStreams: [{logStreamName: 'someOther'}]}))
+    mapRequest(stub, null, ['1', '2'], 'token1')
+    mapRequest(stub, 'token1', ['3', '4'], null)
   }
 }
 
