@@ -9,29 +9,32 @@ import LogItem from '../../src/lib/LogItem'
 const logGroupName = 'testGroup'
 const logStreamName = 'testStream'
 
-const stubClient = (client, withPaging) => {
-  const cwl = client._client
-  const stub = sinon.stub(cwl, 'describeLogStreamsAsync')
-  if (withPaging) {
+const strategies = {
+  default: stub => {
+    stub.returns(Promise.resolve({logStreams: [{logStreamName}]}))
+  },
+  notFound: stub => {
+    stub.returns(Promise.resolve({logStreams: [{logStreamName: 'someOther'}]}))
+  },
+  paged: stub => {
     stub.returns(Promise.resolve({nextToken: '1', logStreams: []}))
     stub.withArgs(sinon.match({nextToken: '1'}))
       .returns(Promise.resolve({nextToken: '2', logStreams: []}))
     stub.withArgs(sinon.match({nextToken: '2'}))
       .returns(Promise.resolve({logStreams: [{logStreamName}]}))
-  } else {
-    stub.returns(Promise.resolve({logStreams: [{logStreamName}]}))
   }
-  sinon.stub(cwl, 'putLogEventsAsync')
-    .returns(Promise.resolve({nextSequenceToken: '42'}))
 }
 
-const getClient = (options, withPaging = false) => {
+const createClient = (options, streamsStrategy = strategies.default) => {
   const client = new CloudWatchClient(logGroupName, logStreamName, options)
-  stubClient(client, withPaging)
+  sinon.stub(client._client, 'putLogEventsAsync')
+    .returns(Promise.resolve({nextSequenceToken: '42'}))
+  const stub = sinon.stub(client._client, 'describeLogStreamsAsync')
+  streamsStrategy(stub)
   return client
 }
 
-const getBatch = size => {
+const createBatch = size => {
   const batch = []
   for (let i = 0; i < size; ++i) {
     batch.push(new LogItem(+new Date(), 'info', 'Test', {foo: 'bar'}))
@@ -42,8 +45,8 @@ const getBatch = size => {
 describe('CloudWatchClient', () => {
   describe('#submit()', () => {
     it('calls putLogEvents', () => {
-      const client = getClient()
-      const batch = getBatch(1)
+      const client = createClient()
+      const batch = createBatch(1)
       return expect(
           client.submit(batch)
             .then(() => client._client.putLogEventsAsync.calledOnce)
@@ -51,19 +54,27 @@ describe('CloudWatchClient', () => {
     })
 
     it('handles log stream paging', () => {
-      const client = getClient(null, true)
-      const batch = getBatch(1)
+      const client = createClient(null, strategies.paged)
+      const batch = createBatch(1)
       return expect(
           client.submit(batch)
             .then(() => client._client.describeLogStreamsAsync.callCount)
         ).to.eventually.equal(3)
     })
 
-    it('caches the sequence token', () => {
-      const client = getClient({maxSequenceTokenAge: 1000})
+    it('rejects if the log stream is not found', () => {
+      const client = createClient(null, strategies.notFound)
+      const batch = createBatch(1)
       return expect(
-          client.submit(getBatch(1))
-            .then(() => client.submit(getBatch(1)))
+          client.submit(batch)
+        ).to.be.rejected
+    })
+
+    it('caches the sequence token', () => {
+      const client = createClient({maxSequenceTokenAge: 1000})
+      return expect(
+          client.submit(createBatch(1))
+            .then(() => client.submit(createBatch(1)))
             .then(() => client._client.describeLogStreamsAsync.calledOnce)
         ).to.eventually.equal(true)
     })

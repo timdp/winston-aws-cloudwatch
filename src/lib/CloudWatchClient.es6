@@ -67,7 +67,13 @@ export default class CloudWatchClient {
       .then(({logStreams, nextToken}) => {
         const match = find(logStreams,
           ({logStreamName}) => (logStreamName === this._logStreamName))
-        return match || this._findLogStream(nextToken)
+        if (match) {
+          return match
+        }
+        if (nextToken == null) {
+          throw new Error('Log stream not found')
+        }
+        return this._findLogStream(nextToken)
       })
   }
 }
