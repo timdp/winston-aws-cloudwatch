@@ -13,15 +13,20 @@ const strategies = {
   default: stub => {
     stub.returns(Promise.resolve({logStreams: [{logStreamName}]}))
   },
-  notFound: stub => {
-    stub.returns(Promise.resolve({logStreams: [{logStreamName: 'someOther'}]}))
-  },
   paged: stub => {
     stub.returns(Promise.resolve({nextToken: '1', logStreams: []}))
     stub.withArgs(sinon.match({nextToken: '1'}))
       .returns(Promise.resolve({nextToken: '2', logStreams: []}))
     stub.withArgs(sinon.match({nextToken: '2'}))
       .returns(Promise.resolve({logStreams: [{logStreamName}]}))
+  },
+  notFound: stub => {
+    stub.returns(Promise.resolve({logStreams: [{logStreamName: 'someOther'}]}))
+  },
+  pagedNotFound: stub => {
+    stub.returns(Promise.resolve({nextToken: '3', logStreams: []}))
+    stub.withArgs(sinon.match({nextToken: '3'}))
+      .returns(Promise.resolve({logStreams: [{logStreamName: 'someOther'}]}))
   }
 }
 
@@ -62,8 +67,16 @@ describe('CloudWatchClient', () => {
         ).to.eventually.equal(3)
     })
 
-    it('rejects if the log stream is not found', () => {
+    it('rejects if the log stream is not found in a single page', () => {
       const client = createClient(null, strategies.notFound)
+      const batch = createBatch(1)
+      return expect(
+          client.submit(batch)
+        ).to.be.rejected
+    })
+
+    it('rejects if the log stream is not found in multiple pages', () => {
+      const client = createClient(null, strategies.pagedNotFound)
       const batch = createBatch(1)
       return expect(
           client.submit(batch)
