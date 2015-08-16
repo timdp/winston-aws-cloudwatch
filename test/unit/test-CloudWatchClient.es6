@@ -9,7 +9,10 @@ import LogItem from '../../src/lib/LogItem'
 const logGroupName = 'testGroup'
 const logStreamName = 'testStream'
 
-const mapRequest = (stub, token, suffixes, nextToken) => {
+let streams = 0
+
+const mapRequest = (stub, includeExpected, token, nextToken) => {
+  const suffixes = [++streams, ++streams, includeExpected ? '' : ++streams]
   const res = Promise.resolve({
     logStreams: suffixes.map(suf => ({logStreamName: logStreamName + suf})),
     nextToken
@@ -23,16 +26,16 @@ const mapRequest = (stub, token, suffixes, nextToken) => {
 }
 
 const strategies = {
-  default: stub => mapRequest(stub, null, [''], null),
-  notFound: stub => mapRequest(stub, null, ['1'], null),
+  default: stub => mapRequest(stub, true),
+  notFound: stub => mapRequest(stub, false),
   paged: stub => {
-    mapRequest(stub, null, ['1', '2'], 'token1')
-    mapRequest(stub, 'token1', ['3', '4'], 'token2')
-    mapRequest(stub, 'token2', ['5', ''], null)
+    mapRequest(stub, false, null, 'token1')
+    mapRequest(stub, false, 'token1', 'token2')
+    mapRequest(stub, true, 'token2')
   },
   pagedNotFound: stub => {
-    mapRequest(stub, null, ['1', '2'], 'token1')
-    mapRequest(stub, 'token1', ['3', '4'], null)
+    mapRequest(stub, false, null, 'token3')
+    mapRequest(stub, false, 'token3')
   }
 }
 
