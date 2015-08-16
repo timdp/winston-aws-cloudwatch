@@ -6,7 +6,8 @@ const debug = _debug('winston-aws-cloudwatch/CloudWatchClient')
 import AWS from 'aws-sdk'
 import Promise from 'bluebird'
 import defaults from 'defaults'
-import {find, isEmpty} from 'lodash'
+import {find} from 'lodash'
+import CloudWatchEventFormatter from './CloudWatchEventFormatter'
 
 export default class CloudWatchClient {
   constructor (logGroupName, logStreamName, options) {
@@ -32,7 +33,7 @@ export default class CloudWatchClient {
     const params = {
       logGroupName: this._logGroupName,
       logStreamName: this._logStreamName,
-      logEvents: batch.map(CloudWatchClient._toCloudWatchEvent),
+      logEvents: batch.map(CloudWatchEventFormatter.formatLogItem),
       sequenceToken
     }
     return this._client.putLogEventsAsync(params)
@@ -68,16 +69,5 @@ export default class CloudWatchClient {
           ({logStreamName}) => (logStreamName === this._logStreamName))
         return match || this._findLogStream(nextToken)
       })
-  }
-  static _toCloudWatchEvent (item) {
-    return {
-      message: CloudWatchClient._toCloudWatchMessage(item),
-      timestamp: item.date
-    }
-  }
-  static _toCloudWatchMessage (item) {
-    const meta = isEmpty(item.meta) ? '' :
-      ' ' + JSON.stringify(item.meta, null, 2)
-    return `[${item.level.toUpperCase()}] ${item.message}${meta}`
   }
 }
