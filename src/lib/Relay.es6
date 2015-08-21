@@ -1,7 +1,7 @@
 'use strict'
 
 import _debug from 'debug'
-const debug = _debug('winston-aws-cloudwatch/Relay')
+const debug = _debug('winston-aws-cloudwatch:Relay')
 
 import Bottleneck from 'bottleneck'
 import defaults from 'defaults'

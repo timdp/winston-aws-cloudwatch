@@ -1,7 +1,7 @@
 'use strict'
 
 import _debug from 'debug'
-const debug = _debug('winston-aws-cloudwatch/Queue')
+const debug = _debug('winston-aws-cloudwatch:Queue')
 
 import {EventEmitter} from 'events'
 

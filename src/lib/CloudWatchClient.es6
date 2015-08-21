@@ -1,7 +1,7 @@
 'use strict'
 
 import _debug from 'debug'
-const debug = _debug('winston-aws-cloudwatch/CloudWatchClient')
+const debug = _debug('winston-aws-cloudwatch:CloudWatchClient')
 
 import AWS from 'aws-sdk'
 import Promise from 'bluebird'
