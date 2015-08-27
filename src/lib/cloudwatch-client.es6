@@ -7,7 +7,7 @@ import AWS from 'aws-sdk'
 import Promise from 'bluebird'
 import defaults from 'defaults'
 import {find} from 'lodash'
-import CloudWatchEventFormatter from './CloudWatchEventFormatter'
+import CloudWatchEventFormatter from './cloudwatch-event-formatter'
 
 export default class CloudWatchClient {
   constructor (logGroupName, logStreamName, options) {

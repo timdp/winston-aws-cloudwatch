@@ -1,9 +1,9 @@
 'use strict'
 
 import {Transport} from 'winston'
-import CloudWatchClient from './lib/CloudWatchClient'
-import LogItem from './lib/LogItem'
-import Relay from './lib/Relay'
+import CloudWatchClient from './lib/cloudwatch-client'
+import LogItem from './lib/log-item'
+import Relay from './lib/relay'
 
 class CloudWatchTransport extends Transport {
   constructor ({logGroupName, logStreamName, awsConfig}) {

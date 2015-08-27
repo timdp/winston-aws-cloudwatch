@@ -5,7 +5,7 @@ const debug = _debug('winston-aws-cloudwatch:Relay')
 
 import Bottleneck from 'bottleneck'
 import defaults from 'defaults'
-import Queue from './Queue'
+import Queue from './queue'
 import {EventEmitter} from 'events'
 
 export default class Relay extends EventEmitter {

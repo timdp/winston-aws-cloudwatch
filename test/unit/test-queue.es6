@@ -3,7 +3,7 @@
 'use strict'
 
 import sinon from 'sinon'
-import Queue from '../../src/lib/Queue'
+import Queue from '../../src/lib/queue'
 
 describe('Queue', () => {
   describe('#size', () => {

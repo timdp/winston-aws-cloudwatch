@@ -3,8 +3,8 @@
 'use strict'
 
 import sinon from 'sinon'
-import CloudWatchClient from '../../src/lib/CloudWatchClient'
-import LogItem from '../../src/lib/LogItem'
+import CloudWatchClient from '../../src/lib/cloudwatch-client'
+import LogItem from '../../src/lib/log-item'
 
 const logGroupName = 'testGroup'
 const logStreamName = 'testStream'

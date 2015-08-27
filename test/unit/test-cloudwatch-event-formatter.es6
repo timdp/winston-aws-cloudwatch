@@ -2,8 +2,8 @@
 
 'use strict'
 
-import CloudWatchEventFormatter from '../../src/lib/CloudWatchEventFormatter'
-import LogItem from '../../src/lib/LogItem'
+import CloudWatchEventFormatter from '../../src/lib/cloudwatch-event-formatter'
+import LogItem from '../../src/lib/log-item'
 
 describe('CloudWatchEventFormatter', () => {
   describe('#formatItem()', () => {

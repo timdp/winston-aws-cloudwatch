@@ -4,7 +4,7 @@
 
 import Promise from 'bluebird'
 import sinon from 'sinon'
-import Relay from '../../src/lib/Relay'
+import Relay from '../../src/lib/relay'
 
 class TestClient {
   constructor (failures = 0) {
