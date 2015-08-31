@@ -1,6 +1,6 @@
 # winston-aws-cloudwatch
 
-[![npm](https://img.shields.io/npm/v/winston-aws-cloudwatch.svg)](https://www.npmjs.com/package/winston-aws-cloudwatch) [![Build Status](https://img.shields.io/travis/timdp/winston-aws-cloudwatch.svg)](https://travis-ci.org/timdp/winston-aws-cloudwatch) [![Coverage Status](https://img.shields.io/coveralls/timdp/winston-aws-cloudwatch.svg)](https://coveralls.io/r/timdp/winston-aws-cloudwatch) [![JavaScript Standard Style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](https://github.com/feross/standard)
+[![npm](https://img.shields.io/npm/v/winston-aws-cloudwatch.svg)](https://www.npmjs.com/package/winston-aws-cloudwatch) [![Dependencies](https://img.shields.io/david/timdp/winston-aws-cloudwatch.svg)](https://david-dm.org/timdp/winston-aws-cloudwatch) [![Build Status](https://img.shields.io/travis/timdp/winston-aws-cloudwatch.svg)](https://travis-ci.org/timdp/winston-aws-cloudwatch) [![Coverage Status](https://img.shields.io/coveralls/timdp/winston-aws-cloudwatch.svg)](https://coveralls.io/r/timdp/winston-aws-cloudwatch) [![JavaScript Standard Style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](https://github.com/feross/standard)
 
 A [Winston](https://www.npmjs.com/package/winston) transport for
 [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/).
