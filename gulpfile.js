@@ -14,8 +14,8 @@ const plumb = function () {
   })
 }
 
-gulp.task('clean', function (cb) {
-  del([dest], cb)
+gulp.task('clean', function () {
+  del.sync([dest])
 })
 
 gulp.task('build', ['test'], function () {
