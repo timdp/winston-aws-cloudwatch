@@ -51,7 +51,8 @@
     "dist"
   ],
   "scripts": {
-    "prepublish": "npm run build",
+    "prepublish": "npm run clean && npm run build",
+    "clean": "gulp clean",
     "build": "gulp build",
     "test": "gulp test"
   },
