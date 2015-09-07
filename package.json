@@ -56,10 +56,7 @@
     "build": "gulp build",
     "test": "gulp test"
   },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/timdp/winston-aws-cloudwatch"
-  },
+  "repository": "timdp/winston-aws-cloudwatch",
   "bugs": {
     "url": "https://github.com/timdp/winston-aws-cloudwatch/issues"
   },
