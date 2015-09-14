@@ -9,9 +9,10 @@ export default class CloudWatchEventFormatter {
       timestamp: item.date
     }
   }
+
   static _logItemToCloudWatchMessage (item) {
-    const meta = isEmpty(item.meta) ? '' :
-      ' ' + JSON.stringify(item.meta, null, 2)
+    const meta = isEmpty(item.meta) ? ''
+      : ' ' + JSON.stringify(item.meta, null, 2)
     return `[${item.level.toUpperCase()}] ${item.message}${meta}`
   }
 }

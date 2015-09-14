@@ -7,15 +7,19 @@ export default class LogItem {
     this._message = message
     this._meta = meta
   }
+
   get date () {
     return this._date
   }
+
   get level () {
     return this._level
   }
+
   get message () {
     return this._message
   }
+
   get meta () {
     return this._meta
   }

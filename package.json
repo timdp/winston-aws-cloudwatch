@@ -44,6 +44,7 @@
     "mkdirp": "^0.5.1",
     "sinon": "^1.15.4",
     "sinon-chai": "^2.8.0",
+    "standard": "^5.2.2",
     "tmp": "0.0.27"
   },
   "main": "dist/index.js",
@@ -54,7 +55,7 @@
     "prepublish": "npm run clean && npm run build",
     "clean": "gulp clean",
     "build": "gulp build",
-    "test": "gulp test"
+    "test": "node node_modules/standard/bin/cmd.js && gulp test"
   },
   "repository": "timdp/winston-aws-cloudwatch",
   "bugs": {

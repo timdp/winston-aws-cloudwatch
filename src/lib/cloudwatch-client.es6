@@ -22,12 +22,14 @@ export default class CloudWatchClient {
     const client = new AWS.CloudWatchLogs(this._options.awsConfig)
     this._client = Promise.promisifyAll(client)
   }
+
   submit (batch) {
     debug('submit', {batch})
     return this._getSequenceToken()
       .then(sequenceToken => this._putLogEvents(batch, sequenceToken))
       .then(({nextSequenceToken}) => this._storeSequenceToken(nextSequenceToken))
   }
+
   _putLogEvents (batch, sequenceToken) {
     debug('putLogEvents', {batch, sequenceToken})
     const params = {
@@ -38,24 +40,28 @@ export default class CloudWatchClient {
     }
     return this._client.putLogEventsAsync(params)
   }
+
   _getSequenceToken () {
     const now = +new Date()
     const isStale = (!this._sequenceTokenInfo ||
       this._sequenceTokenInfo.date + this._options.maxSequenceTokenAge < now)
-    return isStale ? this._fetchAndStoreSequenceToken() :
-      Promise.resolve(this._sequenceTokenInfo.sequenceToken)
+    return isStale ? this._fetchAndStoreSequenceToken()
+      : Promise.resolve(this._sequenceTokenInfo.sequenceToken)
   }
+
   _fetchAndStoreSequenceToken () {
     debug('fetchSequenceToken')
     return this._findLogStream()
       .then(({uploadSequenceToken}) => this._storeSequenceToken(uploadSequenceToken))
   }
+
   _storeSequenceToken (sequenceToken) {
     debug('storeSequenceToken', {sequenceToken})
     const date = +new Date()
     this._sequenceTokenInfo = {sequenceToken, date}
     return sequenceToken
   }
+
   _findLogStream (nextToken) {
     debug('findLogStream', {nextToken})
     const params = {

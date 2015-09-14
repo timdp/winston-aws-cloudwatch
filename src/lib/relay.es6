@@ -20,6 +20,7 @@ export default class Relay extends EventEmitter {
     this._limiter = null
     this._queue = null
   }
+
   start () {
     debug('start')
     if (this._queue) {
@@ -32,10 +33,12 @@ export default class Relay extends EventEmitter {
     this._scheduleSubmission()
     return this._queue
   }
+
   _scheduleSubmission () {
     debug('scheduleSubmission')
     this._limiter.schedule(() => this._submit())
   }
+
   _submit () {
     if (this._queue.size === 0) {
       debug('submit: queue empty')
@@ -48,10 +51,12 @@ export default class Relay extends EventEmitter {
       .then(() => this._onSubmitted(num), err => this._onError(err))
       .then(() => this._scheduleSubmission())
   }
+
   _onSubmitted (num) {
     debug('onSubmitted', {num})
     this._queue.remove(num)
   }
+
   _onError (err) {
     debug('onError', {error: err})
     this.emit('error', err)

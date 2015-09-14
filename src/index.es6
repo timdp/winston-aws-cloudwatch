@@ -13,6 +13,7 @@ class CloudWatchTransport extends Transport {
     relay.on('error', err => console.error('CloudWatch error: %s', err))
     this._queue = relay.start()
   }
+
   log (level, msg, meta, callback) {
     this._queue.push(new LogItem(+new Date(), level, msg, meta))
     callback(null, true)
