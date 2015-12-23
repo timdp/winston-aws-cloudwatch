@@ -50,9 +50,10 @@
     "standard": "^5.4.1",
     "tmp": "0.0.28"
   },
-  "main": "lib/index.js",
+  "main": "index.js",
   "files": [
-    "lib/"
+    "lib/",
+    "index.js"
   ],
   "scripts": {
     "prepublish": "npm run clean && npm run build",
