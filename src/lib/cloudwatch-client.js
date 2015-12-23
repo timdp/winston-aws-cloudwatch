@@ -6,7 +6,7 @@ const debug = _debug('winston-aws-cloudwatch:CloudWatchClient')
 import AWS from 'aws-sdk'
 import Promise from 'bluebird'
 import defaults from 'defaults'
-import {find} from 'lodash'
+import find from 'lodash.find'
 import CloudWatchEventFormatter from './cloudwatch-event-formatter'
 
 export default class CloudWatchClient {

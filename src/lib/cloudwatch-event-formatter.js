@@ -1,6 +1,6 @@
 'use strict'
 
-import {isEmpty} from 'lodash'
+import isEmpty from 'lodash.isempty'
 
 export default class CloudWatchEventFormatter {
   static formatLogItem (item) {
