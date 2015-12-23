@@ -3,7 +3,7 @@ root = true
 [*]
 end_of_line = crlf
 
-[*.{es6,js,json,yaml,yml,html}]
+[*.{js,json,yaml,yml,html}]
 charset = utf-8
 indent_style = space
 indent_size = 2
