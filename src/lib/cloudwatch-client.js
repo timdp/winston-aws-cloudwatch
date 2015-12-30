@@ -16,7 +16,8 @@ export default class CloudWatchClient {
     this._logStreamName = logStreamName
     this._options = defaults(options, {
       awsConfig: null,
-      maxSequenceTokenAge: -1
+      maxSequenceTokenAge: -1,
+      formatLogItem: CloudWatchEventFormatter.formatLogItem
     })
     this._sequenceTokenInfo = null
     const client = new AWS.CloudWatchLogs(this._options.awsConfig)
@@ -35,7 +36,7 @@ export default class CloudWatchClient {
     const params = {
       logGroupName: this._logGroupName,
       logStreamName: this._logStreamName,
-      logEvents: batch.map(CloudWatchEventFormatter.formatLogItem),
+      logEvents: batch.map(this._options.formatLogItem),
       sequenceToken
     }
     return this._client.putLogEventsAsync(params)
