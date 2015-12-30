@@ -17,7 +17,8 @@ winston.add(CloudWatchTransport, {
     accessKeyId: '...',
     secretAccessKey: '...',
     region: '...'
-  }
+  },
+  formatLogItem: function(item) {} // Optional custom format function
 })
 ```
 
