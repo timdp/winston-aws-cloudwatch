@@ -1,6 +1,6 @@
 {
   "name": "winston-aws-cloudwatch",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "A Winston transport for Amazon CloudWatch.",
   "keywords": [
     "amazon",
