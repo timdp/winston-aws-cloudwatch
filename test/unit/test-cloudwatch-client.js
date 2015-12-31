@@ -107,7 +107,10 @@ describe('CloudWatchClient', () => {
 
     it('logs with custom formatLogItem option', () => {
       const formatLogItem = sinon.spy((item) => {
-        return `CUSTOM__${JSON.stringify(item)}`
+        return {
+          timestamp: item.date,
+          message: `CUSTOM__${JSON.stringify(item)}`
+        }
       })
 
       const client = createClient({formatLogItem})
