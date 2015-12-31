@@ -37,6 +37,7 @@ export default class Relay extends EventEmitter {
   _scheduleSubmission () {
     debug('scheduleSubmission')
     this._limiter.schedule(() => this._submit())
+    return null
   }
 
   _submit () {

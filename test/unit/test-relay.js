@@ -58,12 +58,11 @@ describe('Relay', () => {
       const relay = new Relay(client, {submissionInterval, batchSize})
       const queue = relay.start()
 
-      Promise.delay(submissionInterval * 0.8)
-        .then(() => {
-          for (let i = 0; i < batchSize * batches; ++i) {
-            queue.push({})
-          }
-        })
+      setTimeout(() => {
+        for (let i = 0; i < batchSize * batches; ++i) {
+          queue.push({})
+        }
+      }, submissionInterval * 0.8)
 
       const counts = []
       let counting = Promise.delay(1)
