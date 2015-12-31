@@ -104,5 +104,21 @@ describe('CloudWatchClient', () => {
             .then(() => client._client.describeLogStreamsAsync.calledOnce)
         ).to.eventually.equal(true)
     })
+
+    it('logs with custom formatLogItem option', () => {
+      const formatLogItem = sinon.spy((item) => {
+        return {
+          timestamp: item.date,
+          message: `CUSTOM__${JSON.stringify(item)}`
+        }
+      })
+
+      const client = createClient({formatLogItem})
+      const batch = createBatch(1)
+      return expect(
+          client.submit(batch)
+            .then(() => formatLogItem.calledOnce)
+        ).to.eventually.equal(true)
+    })
   })
 })
