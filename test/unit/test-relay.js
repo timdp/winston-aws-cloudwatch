@@ -40,7 +40,7 @@ describe('Relay', () => {
       const relay = new Relay(client, {submissionInterval})
       const queue = relay.start()
       const items = [{}, {}, {}]
-      for (let item of items) {
+      for (const item of items) {
         queue.push(item)
       }
       const time = submissionInterval * 1.1
