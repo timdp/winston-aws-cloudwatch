@@ -28,13 +28,13 @@ export default class Relay extends EventEmitter {
     }
     this._limiter = new Bottleneck(1, this._options.submissionInterval, 1)
     this._queue = new Queue()
-    this._queue.on('push', () => this._scheduleSubmission())
     // Initial call to postpone first submission
     this._scheduleSubmission()
   }
 
   submit (item) {
     this._queue.push(item)
+    this._scheduleSubmission()
   }
 
   _scheduleSubmission () {

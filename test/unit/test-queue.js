@@ -2,7 +2,6 @@
 
 'use strict'
 
-import sinon from 'sinon'
 import Queue from '../../src/lib/queue'
 
 describe('Queue', () => {
@@ -29,14 +28,6 @@ describe('Queue', () => {
       const prevSize = queue.size
       queue.push({})
       expect(queue.size).to.equal(prevSize + 1)
-    })
-
-    it('emits a push event', () => {
-      const queue = new Queue()
-      const spy = sinon.spy()
-      queue.on('push', spy)
-      queue.push({})
-      expect(spy).to.have.been.calledOnce
     })
   })
 

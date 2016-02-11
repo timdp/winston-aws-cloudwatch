@@ -3,11 +3,8 @@
 import _debug from 'debug'
 const debug = _debug('winston-aws-cloudwatch:Queue')
 
-import {EventEmitter} from 'events'
-
-export default class Queue extends EventEmitter {
+export default class Queue {
   constructor () {
-    super()
     this._contents = []
   }
 
@@ -18,7 +15,6 @@ export default class Queue extends EventEmitter {
   push (item) {
     debug('push', {item})
     this._contents.push(item)
-    this.emit('push', item)
   }
 
   head (num) {
