@@ -12,7 +12,7 @@ class CloudWatchTransport extends Transport {
     const client = new CloudWatchClient(logGroupName, logStreamName,
       {createLogGroup, createLogStream, awsConfig, formatLogItem})
     const relay = new Relay(client)
-    relay.on('error', err => console.error('CloudWatch error: %s', err))
+    relay.on('error', err => this.emit('error', err))
     this._queue = relay.start()
   }
 

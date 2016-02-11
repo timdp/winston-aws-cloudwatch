@@ -26,6 +26,23 @@ winston.add(CloudWatchTransport, {
 })
 ```
 
+## Error Handling
+
+If, for any reason, logging to CloudWatch should fail, then the transport will
+emit an `error` event. It is recommended that you subscribe to this event to
+avoid crashes. Here's a basic example:
+
+```js
+var config = { ... } // See above
+var cwt = new CloudWatchTransport(config)
+
+cwt.on('error', function (error) {
+  console.error('Error logging to CloudWatch: ' + error.message)
+})
+
+winston.add(cwt)
+```
+
 ## But Why?
 
 As you may have noticed, there is also
