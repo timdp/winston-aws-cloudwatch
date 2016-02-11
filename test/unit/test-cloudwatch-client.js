@@ -16,7 +16,7 @@ let streams = 0
 const mapRequest = (stub, includeExpected, token, nextToken) => {
   const suffixes = [++streams, ++streams, includeExpected ? '' : ++streams]
   const res = Promise.resolve({
-    logStreams: suffixes.map(suf => ({logStreamName: logStreamName + suf})),
+    logStreams: suffixes.map((suf) => ({logStreamName: logStreamName + suf})),
     nextToken
   })
   if (token) {
@@ -37,20 +37,20 @@ const mapRequests = (stub, pages, includeExpected) => {
   mapRequest(stub, includeExpected, prevToken)
 }
 
-const createErrorWithCode = code => {
+const createErrorWithCode = (code) => {
   const error = new Error('Whoopsie daisies')
   error.code = code
   return error
 }
 
 const streamsStrategies = {
-  default: stub => mapRequest(stub, true),
-  notFound: stub => mapRequest(stub, false),
-  paged: stub => mapRequests(stub, 3, true),
-  pagedNotFound: stub => mapRequests(stub, 3, false)
+  default: (stub) => mapRequest(stub, true),
+  notFound: (stub) => mapRequest(stub, false),
+  paged: (stub) => mapRequests(stub, 3, true),
+  pagedNotFound: (stub) => mapRequests(stub, 3, false)
 }
 
-const createClient = options => {
+const createClient = (options) => {
   options = defaults(options, {
     clientOptions: null,
     streamsStrategy: streamsStrategies.default,
@@ -74,7 +74,7 @@ const createClient = options => {
   return client
 }
 
-const createBatch = size => {
+const createBatch = (size) => {
   const batch = []
   for (let i = 0; i < size; ++i) {
     batch.push(new LogItem(+new Date(), 'info', 'Test', {foo: 'bar'}))

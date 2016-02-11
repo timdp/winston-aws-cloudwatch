@@ -49,7 +49,7 @@ export default class Relay extends EventEmitter {
     const num = batch.length
     debug(`submit: submitting ${num} item(s)`)
     return this._client.submit(batch)
-      .then(() => this._onSubmitted(num), err => this._onError(err))
+      .then(() => this._onSubmitted(num), (err) => this._onError(err))
       .then(() => this._scheduleSubmission())
   }
 

@@ -31,7 +31,7 @@ export default class CloudWatchClient {
     debug('submit', {batch})
     return this._initialize()
       .then(() => this._getSequenceToken())
-      .then(sequenceToken => this._putLogEvents(batch, sequenceToken))
+      .then((sequenceToken) => this._putLogEvents(batch, sequenceToken))
       .then(({nextSequenceToken}) => this._storeSequenceToken(nextSequenceToken))
   }
 
@@ -51,7 +51,7 @@ export default class CloudWatchClient {
       logGroupName: this._logGroupName
     }
     return this._client.createLogGroupAsync(params)
-      .catch(err => this._allowResourceAlreadyExistsException(err))
+      .catch((err) => this._allowResourceAlreadyExistsException(err))
   }
 
   _maybeCreateLogStream () {
@@ -63,7 +63,7 @@ export default class CloudWatchClient {
       logStreamName: this._logStreamName
     }
     return this._client.createLogStreamAsync(params)
-      .catch(err => this._allowResourceAlreadyExistsException(err))
+      .catch((err) => this._allowResourceAlreadyExistsException(err))
   }
 
   _allowResourceAlreadyExistsException (err) {

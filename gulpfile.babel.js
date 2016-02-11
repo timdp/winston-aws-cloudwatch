@@ -31,9 +31,9 @@ gulp.task('build', ['test'], () => {
     .pipe(gulp.dest(DEST))
 })
 
-gulp.task('cleanbuild', cb => seq('clean', 'build', cb))
+gulp.task('cleanbuild', (cb) => seq('clean', 'build', cb))
 
-gulp.task('coverage', cb => {
+gulp.task('coverage', (cb) => {
   gulp.src('src/**/*.js')
     .pipe(plumb())
     .pipe($.istanbul({instrumenter: Instrumenter}))
