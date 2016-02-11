@@ -11,13 +11,13 @@ class CloudWatchTransport extends Transport {
     super()
     const client = new CloudWatchClient(logGroupName, logStreamName,
       {createLogGroup, createLogStream, awsConfig, formatLogItem})
-    const relay = new Relay(client)
-    relay.on('error', (err) => this.emit('error', err))
-    this._queue = relay.start()
+    this._relay = new Relay(client)
+    this._relay.on('error', (err) => this.emit('error', err))
+    this._relay.start()
   }
 
   log (level, msg, meta, callback) {
-    this._queue.push(new LogItem(+new Date(), level, msg, meta))
+    this._relay.submit(new LogItem(+new Date(), level, msg, meta))
     callback(null, true)
   }
 }

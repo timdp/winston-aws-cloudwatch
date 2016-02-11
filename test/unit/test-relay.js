@@ -38,10 +38,10 @@ describe('Relay', () => {
       const submissionInterval = 100
       const client = new TestClient()
       const relay = new Relay(client, {submissionInterval})
-      const queue = relay.start()
+      relay.start()
       const items = [{}, {}, {}]
       for (const item of items) {
-        queue.push(item)
+        relay.submit(item)
       }
       const time = submissionInterval * 1.1
       return expect(
@@ -56,11 +56,11 @@ describe('Relay', () => {
       const batches = 3
       const client = new TestClient()
       const relay = new Relay(client, {submissionInterval, batchSize})
-      const queue = relay.start()
+      relay.start()
 
       setTimeout(() => {
         for (let i = 0; i < batchSize * batches; ++i) {
-          queue.push({})
+          relay.submit({})
         }
       }, submissionInterval * 0.8)
 
@@ -88,8 +88,8 @@ describe('Relay', () => {
       const client = new TestClient(failures)
       const relay = new Relay(client, {submissionInterval})
       relay.on('error', spy)
-      const queue = relay.start()
-      queue.push({})
+      relay.start()
+      relay.submit({})
       const time = submissionInterval * (failures + retries)
       return expect(
           Promise.delay(time)

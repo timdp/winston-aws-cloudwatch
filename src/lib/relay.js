@@ -31,7 +31,10 @@ export default class Relay extends EventEmitter {
     this._queue.on('push', () => this._scheduleSubmission())
     // Initial call to postpone first submission
     this._scheduleSubmission()
-    return this._queue
+  }
+
+  submit (item) {
+    this._queue.push(item)
   }
 
   _scheduleSubmission () {
