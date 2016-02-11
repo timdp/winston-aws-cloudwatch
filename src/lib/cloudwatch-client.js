@@ -17,18 +17,59 @@ export default class CloudWatchClient {
     this._options = defaults(options, {
       awsConfig: null,
       maxSequenceTokenAge: -1,
-      formatLogItem: CloudWatchEventFormatter.formatLogItem
+      formatLogItem: CloudWatchEventFormatter.formatLogItem,
+      createLogGroup: false,
+      createLogStream: false
     })
     this._sequenceTokenInfo = null
     const client = new AWS.CloudWatchLogs(this._options.awsConfig)
     this._client = Promise.promisifyAll(client)
+    this._initializing = null
   }
 
   submit (batch) {
     debug('submit', {batch})
-    return this._getSequenceToken()
+    return this._initialize()
+      .then(() => this._getSequenceToken())
       .then(sequenceToken => this._putLogEvents(batch, sequenceToken))
       .then(({nextSequenceToken}) => this._storeSequenceToken(nextSequenceToken))
+  }
+
+  _initialize () {
+    if (this._initializing == null) {
+      this._initializing = this._maybeCreateLogGroup()
+        .then(() => this._maybeCreateLogStream())
+    }
+    return this._initializing
+  }
+
+  _maybeCreateLogGroup () {
+    if (!this._options.createLogGroup) {
+      return Promise.resolve()
+    }
+    const params = {
+      logGroupName: this._logGroupName
+    }
+    return this._client.createLogGroupAsync(params)
+      .catch(err => this._allowResourceAlreadyExistsException(err))
+  }
+
+  _maybeCreateLogStream () {
+    if (!this._options.createLogStream) {
+      return Promise.resolve()
+    }
+    const params = {
+      logGroupName: this._logGroupName,
+      logStreamName: this._logStreamName
+    }
+    return this._client.createLogStreamAsync(params)
+      .catch(err => this._allowResourceAlreadyExistsException(err))
+  }
+
+  _allowResourceAlreadyExistsException (err) {
+    if (err.code !== 'ResourceAlreadyExistsException') {
+      throw err
+    }
   }
 
   _putLogEvents (batch, sequenceToken) {

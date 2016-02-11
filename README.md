@@ -11,14 +11,16 @@ A [Winston](https://www.npmjs.com/package/winston) transport for
 var CloudWatchTransport = require('winston-aws-cloudwatch')
 
 winston.add(CloudWatchTransport, {
-  logGroupName: '...',
-  logStreamName: '...',
-  awsConfig: { // Optional
+  logGroupName: '...', // REQUIRED
+  logStreamName: '...', // REQUIRED
+  createLogGroup: true,
+  createLogStream: true,
+  awsConfig: {
     accessKeyId: '...',
     secretAccessKey: '...',
     region: '...'
   },
-  formatLogItem: function (item) { // Optional
+  formatLogItem: function (item) {
     return item.level + ': ' + item.message + ' ' + JSON.stringify(item.meta)
   }
 })
