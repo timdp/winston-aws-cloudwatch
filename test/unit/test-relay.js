@@ -51,7 +51,7 @@ describe('Relay', () => {
     })
 
     it('throttles submissions', () => {
-      const submissionInterval = 100
+      const submissionInterval = 200
       const batchSize = 10
       const batches = 3
       const client = new TestClient()
