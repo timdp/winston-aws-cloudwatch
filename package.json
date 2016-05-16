@@ -47,7 +47,7 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-standard": "^7.0.1",
     "isparta": "^4.0.0",
-    "run-sequence": "^1.1.5",
+    "run-sequence": "^1.2.0",
     "sinon": "^1.15.4",
     "sinon-chai": "^2.8.0"
   },
