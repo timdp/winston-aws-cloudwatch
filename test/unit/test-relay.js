@@ -35,7 +35,7 @@ describe('Relay', () => {
     })
 
     it('submits queue items to the client', async () => {
-      const submissionInterval = 10
+      const submissionInterval = 50
       const client = new TestClient()
       const relay = new Relay(client, {submissionInterval})
       relay.start()
@@ -48,7 +48,7 @@ describe('Relay', () => {
     })
 
     it('throttles submissions', async () => {
-      const submissionInterval = 10
+      const submissionInterval = 50
       const batchSize = 10
       const batches = 3
       const client = new TestClient()
@@ -74,7 +74,7 @@ describe('Relay', () => {
     })
 
     it('emits an error event', async () => {
-      const submissionInterval = 10
+      const submissionInterval = 50
       const failures = 3
       const retries = 2
       const spy = sinon.spy()
