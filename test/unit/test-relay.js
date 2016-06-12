@@ -40,11 +40,9 @@ describe('Relay', () => {
       const relay = new Relay(client, {submissionInterval})
       relay.start()
       const items = [{}, {}, {}]
-      setTimeout(() => {
-        for (const item of items) {
-          relay.submit(item)
-        }
-      }, 0)
+      for (const item of items) {
+        relay.submit(item)
+      }
       await Promise.delay(submissionInterval * 1.1)
       expect(client.submitted).to.deep.equal(items)
     })
@@ -57,11 +55,9 @@ describe('Relay', () => {
       const relay = new Relay(client, {submissionInterval, batchSize})
       relay.start()
 
-      setTimeout(() => {
-        for (let i = 0; i < batchSize * batches; ++i) {
-          relay.submit({})
-        }
-      }, 0)
+      for (let i = 0; i < batchSize * batches; ++i) {
+        relay.submit({})
+      }
 
       const counts = []
       for (let i = 0; i < batches; ++i) {
@@ -86,9 +82,7 @@ describe('Relay', () => {
       const relay = new Relay(client, {submissionInterval})
       relay.on('error', spy)
       relay.start()
-      setTimeout(() => {
-        relay.submit({})
-      }, 0)
+      relay.submit({})
       await Promise.delay(submissionInterval * (failures + retries) * 1.1)
       expect(spy.callCount).to.equal(failures)
     })

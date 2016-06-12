@@ -3,6 +3,7 @@
 import _debug from 'debug'
 const debug = _debug('winston-aws-cloudwatch:Relay')
 
+import Promise from 'bluebird'
 import Bottleneck from 'bottleneck'
 import defaults from 'defaults'
 import Queue from './queue'
@@ -29,7 +30,7 @@ export default class Relay extends EventEmitter {
     this._limiter = new Bottleneck(1, this._options.submissionInterval, 1)
     this._queue = new Queue()
     // Initial call to postpone first submission
-    this._scheduleSubmission()
+    this._limiter.schedule(() => Promise.resolve())
   }
 
   submit (item) {
@@ -40,7 +41,6 @@ export default class Relay extends EventEmitter {
   _scheduleSubmission () {
     debug('scheduleSubmission')
     this._limiter.schedule(() => this._submit())
-    return null
   }
 
   _submit () {
