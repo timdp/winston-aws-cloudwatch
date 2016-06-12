@@ -1,5 +1,3 @@
-/* global describe, it, expect */
-
 'use strict'
 
 import LogItem from '../../src/lib/log-item'

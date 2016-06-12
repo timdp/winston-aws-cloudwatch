@@ -1,5 +1,3 @@
-/* global describe, it, expect */
-
 'use strict'
 
 import Promise from 'bluebird'
@@ -11,6 +9,7 @@ class TestClient {
     this._submitted = []
     this._failures = failures
   }
+
   submit (batch) {
     this._submitted = this._submitted.concat(batch)
     if (this._failures > 0) {
@@ -19,6 +18,7 @@ class TestClient {
     }
     return Promise.resolve()
   }
+
   get submitted () {
     return this._submitted
   }
@@ -34,24 +34,23 @@ describe('Relay', () => {
       }).to.throw(Error)
     })
 
-    it('eventually submits queue items to the client', () => {
-      const submissionInterval = 100
+    it('submits queue items to the client', async () => {
+      const submissionInterval = 10
       const client = new TestClient()
       const relay = new Relay(client, {submissionInterval})
       relay.start()
       const items = [{}, {}, {}]
-      for (const item of items) {
-        relay.submit(item)
-      }
-      const time = submissionInterval * 1.1
-      return expect(
-          Promise.delay(time)
-            .then(() => client.submitted)
-        ).to.eventually.deep.equal(items)
+      setTimeout(() => {
+        for (const item of items) {
+          relay.submit(item)
+        }
+      }, 0)
+      await Promise.delay(submissionInterval * 1.1)
+      expect(client.submitted).to.deep.equal(items)
     })
 
-    it('throttles submissions', () => {
-      const submissionInterval = 200
+    it('throttles submissions', async () => {
+      const submissionInterval = 10
       const batchSize = 10
       const batches = 3
       const client = new TestClient()
@@ -62,26 +61,24 @@ describe('Relay', () => {
         for (let i = 0; i < batchSize * batches; ++i) {
           relay.submit({})
         }
-      }, submissionInterval * 0.8)
+      }, 0)
 
       const counts = []
-      let counting = Promise.delay(1)
       for (let i = 0; i < batches; ++i) {
-        counting = counting.then(() => Promise.delay(submissionInterval))
-          .then(() => counts.push(client.submitted.length))
+        await Promise.delay(submissionInterval * 1.1)
+        counts.push(client.submitted.length)
       }
-      counting = counting.then(() => counts)
 
       const expected = []
       for (let i = 1; i <= batches; ++i) {
         expected.push(batchSize * i)
       }
 
-      return expect(counting).to.eventually.deep.equal(expected)
+      expect(counts).to.deep.equal(expected)
     })
 
-    it('emits an error event', () => {
-      const submissionInterval = 100
+    it('emits an error event', async () => {
+      const submissionInterval = 10
       const failures = 3
       const retries = 2
       const spy = sinon.spy()
@@ -89,12 +86,11 @@ describe('Relay', () => {
       const relay = new Relay(client, {submissionInterval})
       relay.on('error', spy)
       relay.start()
-      relay.submit({})
-      const time = submissionInterval * (failures + retries)
-      return expect(
-          Promise.delay(time)
-            .then(() => spy.callCount)
-        ).to.eventually.equal(failures)
+      setTimeout(() => {
+        relay.submit({})
+      }, 0)
+      await Promise.delay(submissionInterval * (failures + retries) * 1.1)
+      expect(spy.callCount).to.equal(failures)
     })
   })
 })

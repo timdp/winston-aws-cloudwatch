@@ -1,5 +1,3 @@
-/* global describe, it, expect */
-
 'use strict'
 
 import CloudWatchEventFormatter from '../../src/lib/cloudwatch-event-formatter'

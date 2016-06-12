@@ -1,5 +1,3 @@
-/* global describe, it, expect */
-
 'use strict'
 
 import Queue from '../../src/lib/queue'
