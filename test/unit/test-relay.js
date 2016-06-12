@@ -1,7 +1,7 @@
 'use strict'
 
-import Promise from 'bluebird'
 import sinon from 'sinon'
+import delay from 'delay'
 import Relay from '../../src/lib/relay'
 
 class TestClient {
@@ -43,7 +43,7 @@ describe('Relay', () => {
       for (const item of items) {
         relay.submit(item)
       }
-      await Promise.delay(submissionInterval * 1.1)
+      await delay(submissionInterval * 1.1)
       expect(client.submitted).to.deep.equal(items)
     })
 
@@ -61,7 +61,7 @@ describe('Relay', () => {
 
       const counts = []
       for (let i = 0; i < batches; ++i) {
-        await Promise.delay(submissionInterval * 1.1)
+        await delay(submissionInterval * 1.1)
         counts.push(client.submitted.length)
       }
 
@@ -83,7 +83,7 @@ describe('Relay', () => {
       relay.on('error', spy)
       relay.start()
       relay.submit({})
-      await Promise.delay(submissionInterval * (failures + retries) * 1.1)
+      await delay(submissionInterval * (failures + retries) * 1.1)
       expect(spy.callCount).to.equal(failures)
     })
   })

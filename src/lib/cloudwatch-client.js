@@ -4,7 +4,6 @@ import _debug from 'debug'
 const debug = _debug('winston-aws-cloudwatch:CloudWatchClient')
 
 import AWS from 'aws-sdk'
-import Promise from 'bluebird'
 import defaults from 'defaults'
 import find from 'lodash.find'
 import CloudWatchEventFormatter from './cloudwatch-event-formatter'
@@ -22,8 +21,7 @@ export default class CloudWatchClient {
       createLogStream: false
     })
     this._sequenceTokenInfo = null
-    const client = new AWS.CloudWatchLogs(this._options.awsConfig)
-    this._client = Promise.promisifyAll(client)
+    this._client = new AWS.CloudWatchLogs(this._options.awsConfig)
     this._initializing = null
   }
 
@@ -50,7 +48,7 @@ export default class CloudWatchClient {
     const params = {
       logGroupName: this._logGroupName
     }
-    return this._client.createLogGroupAsync(params)
+    return this._client.createLogGroup(params).promise()
       .catch((err) => this._allowResourceAlreadyExistsException(err))
   }
 
@@ -62,7 +60,7 @@ export default class CloudWatchClient {
       logGroupName: this._logGroupName,
       logStreamName: this._logStreamName
     }
-    return this._client.createLogStreamAsync(params)
+    return this._client.createLogStream(params).promise()
       .catch((err) => this._allowResourceAlreadyExistsException(err))
   }
 
@@ -80,7 +78,7 @@ export default class CloudWatchClient {
       logEvents: batch.map(this._options.formatLogItem),
       sequenceToken
     }
-    return this._client.putLogEventsAsync(params)
+    return this._client.putLogEvents(params).promise()
   }
 
   _getSequenceToken () {
@@ -111,7 +109,7 @@ export default class CloudWatchClient {
       logStreamNamePrefix: this._logStreamName,
       nextToken
     }
-    return this._client.describeLogStreamsAsync(params)
+    return this._client.describeLogStreams(params).promise()
       .then(({logStreams, nextToken}) => {
         const match = find(logStreams,
           ({logStreamName}) => (logStreamName === this._logStreamName))

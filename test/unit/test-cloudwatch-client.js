@@ -11,6 +11,8 @@ const logStreamName = 'testStream'
 let tokens = 0
 let streams = 0
 
+const withPromise = (res) => ({promise: () => res})
+
 const mapRequest = (stub, includeExpected, token, nextToken) => {
   const suffixes = [++streams, ++streams, includeExpected ? '' : ++streams]
   const res = Promise.resolve({
@@ -19,9 +21,9 @@ const mapRequest = (stub, includeExpected, token, nextToken) => {
   })
   if (token) {
     stub.withArgs(sinon.match({nextToken: token}))
-      .returns(res)
+      .returns(withPromise(res))
   } else {
-    stub.returns(res)
+    stub.returns(withPromise(res))
   }
 }
 
@@ -57,17 +59,17 @@ const createClient = (options) => {
   })
   const client = new CloudWatchClient(logGroupName, logStreamName,
     options.clientOptions)
-  sinon.stub(client._client, 'putLogEventsAsync')
-    .returns(Promise.resolve({nextSequenceToken: 'token42'}))
-  sinon.stub(client._client, 'createLogGroupAsync')
-    .returns(options.groupErrorCode
+  sinon.stub(client._client, 'putLogEvents')
+    .returns(withPromise(Promise.resolve({nextSequenceToken: 'token42'})))
+  sinon.stub(client._client, 'createLogGroup')
+    .returns(withPromise(options.groupErrorCode
       ? Promise.reject(createErrorWithCode(options.groupErrorCode))
-      : Promise.resolve())
-  sinon.stub(client._client, 'createLogStreamAsync')
-    .returns(options.streamErrorCode
+      : Promise.resolve()))
+  sinon.stub(client._client, 'createLogStream')
+    .returns(withPromise(options.streamErrorCode
       ? Promise.reject(createErrorWithCode(options.streamErrorCode))
-      : Promise.resolve())
-  const stub = sinon.stub(client._client, 'describeLogStreamsAsync')
+      : Promise.resolve()))
+  const stub = sinon.stub(client._client, 'describeLogStreams')
   options.streamsStrategy(stub)
   return client
 }
@@ -87,7 +89,7 @@ describe('CloudWatchClient', () => {
       const batch = createBatch(1)
       return expect(
           client.submit(batch)
-            .then(() => client._client.putLogEventsAsync.calledOnce)
+            .then(() => client._client.putLogEvents.calledOnce)
         ).to.eventually.equal(true)
     })
 
@@ -98,7 +100,7 @@ describe('CloudWatchClient', () => {
       const batch = createBatch(1)
       return expect(
           client.submit(batch)
-            .then(() => client._client.describeLogStreamsAsync.callCount)
+            .then(() => client._client.describeLogStreams.callCount)
         ).to.eventually.equal(3)
     })
 
@@ -131,7 +133,7 @@ describe('CloudWatchClient', () => {
       return expect(
           client.submit(createBatch(1))
             .then(() => client.submit(createBatch(1)))
-            .then(() => client._client.describeLogStreamsAsync.calledOnce)
+            .then(() => client._client.describeLogStreams.calledOnce)
         ).to.eventually.equal(true)
     })
   })
@@ -163,7 +165,7 @@ describe('CloudWatchClient', () => {
       const batch = createBatch(1)
       return expect(
           client.submit(batch)
-            .then(() => client._client.createLogGroupAsync.calledOnce)
+            .then(() => client._client.createLogGroup.calledOnce)
         ).to.eventually.equal(true)
     })
 
@@ -198,7 +200,7 @@ describe('CloudWatchClient', () => {
       const batch = createBatch(1)
       return expect(
           client.submit(batch)
-            .then(() => client._client.createLogStreamAsync.calledOnce)
+            .then(() => client._client.createLogStream.calledOnce)
         ).to.eventually.equal(true)
     })
 
