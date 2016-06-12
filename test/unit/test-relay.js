@@ -1,7 +1,6 @@
 'use strict'
 
 import sinon from 'sinon'
-import delay from 'delay'
 import Relay from '../../src/lib/relay'
 
 class TestClient {
@@ -25,6 +24,16 @@ class TestClient {
 }
 
 describe('Relay', () => {
+  let clock
+
+  before(() => {
+    clock = sinon.useFakeTimers()
+  })
+
+  after(() => {
+    clock.restore()
+  })
+
   describe('#start()', () => {
     it('can only be called once', () => {
       const relay = new Relay(new TestClient())
@@ -34,8 +43,8 @@ describe('Relay', () => {
       }).to.throw(Error)
     })
 
-    it('submits queue items to the client', async () => {
-      const submissionInterval = 50
+    it('submits queue items to the client', () => {
+      const submissionInterval = 1000
       const client = new TestClient()
       const relay = new Relay(client, {submissionInterval})
       relay.start()
@@ -43,12 +52,12 @@ describe('Relay', () => {
       for (const item of items) {
         relay.submit(item)
       }
-      await delay(submissionInterval * 1.1)
+      clock.tick(submissionInterval * 1.1)
       expect(client.submitted).to.deep.equal(items)
     })
 
-    it('throttles submissions', async () => {
-      const submissionInterval = 50
+    it('throttles submissions', () => {
+      const submissionInterval = 1000
       const batchSize = 10
       const batches = 3
       const client = new TestClient()
@@ -61,7 +70,7 @@ describe('Relay', () => {
 
       const counts = []
       for (let i = 0; i < batches; ++i) {
-        await delay(submissionInterval * 1.1)
+        clock.tick(submissionInterval * 1.1)
         counts.push(client.submitted.length)
       }
 
@@ -73,8 +82,8 @@ describe('Relay', () => {
       expect(counts).to.deep.equal(expected)
     })
 
-    it('emits an error event', async () => {
-      const submissionInterval = 50
+    it('emits an error event', () => {
+      const submissionInterval = 1000
       const failures = 3
       const retries = 2
       const spy = sinon.spy()
@@ -83,7 +92,7 @@ describe('Relay', () => {
       relay.on('error', spy)
       relay.start()
       relay.submit({})
-      await delay(submissionInterval * (failures + retries) * 1.1)
+      clock.tick(submissionInterval * (failures + retries) * 1.1)
       expect(spy.callCount).to.equal(failures)
     })
   })
