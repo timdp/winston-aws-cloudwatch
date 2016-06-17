@@ -4,17 +4,13 @@ import {Instrumenter} from 'isparta'
 import del from 'del'
 import seq from 'run-sequence'
 
+const COVERAGE_THRESHOLDS = {global: 100}
+
 const $ = loadPlugins()
 
-const plumb = () => $.plumber({
+const plumb = () => $.if(!process.env.CI, $.plumber({
   errorHandler: $.notify.onError('<%= error.message %>')
-})
-
-const test = () => {
-  return gulp.src(['test/lib/setup.js', 'test/unit/**/*.js'], {read: false})
-    .pipe($.if(!process.env.CI, plumb()))
-    .pipe($.mocha({reporter: 'spec'}))
-}
+}))
 
 gulp.task('clean', () => del('lib'))
 
@@ -31,9 +27,7 @@ gulp.task('lint', () => {
   return gulp.src('src/**/*.js')
     .pipe(plumb())
     .pipe($.standard())
-    .pipe($.standard.reporter('default', {
-      breakOnError: false
-    }))
+    .pipe($.standard.reporter('default', {breakOnError: false}))
 })
 
 gulp.task('pre-coverage', () => {
@@ -43,22 +37,22 @@ gulp.task('pre-coverage', () => {
 })
 
 gulp.task('coverage', ['pre-coverage'], () => {
-  return test()
+  return gulp.src(['test/lib/setup.js', 'test/{unit,integration}/**/*.js', '!**/_*.js'], {read: false})
+    .pipe(plumb())
+    .pipe($.mocha({reporter: 'spec'}))
     .pipe($.istanbul.writeReports())
-    .pipe($.istanbul.enforceThresholds({thresholds: {global: 70}}))
+    .pipe($.istanbul.enforceThresholds({thresholds: COVERAGE_THRESHOLDS}))
 })
 
-gulp.task('coveralls', ['coverage'], () => {
+gulp.task('test', (cb) => seq('lint', 'coverage', cb))
+
+gulp.task('coveralls', () => {
   return gulp.src('coverage/lcov.info')
     .pipe($.coveralls())
 })
 
-gulp.task('test', test)
+gulp.task('build', (cb) => seq('test', 'clean', 'transpile', cb))
 
-gulp.task('build', (cb) => seq('lint', 'coverage', 'transpile', cb))
+gulp.task('watch', () => gulp.watch('{src,test}/**/*', ['build']))
 
-gulp.task('cleanbuild', (cb) => seq('clean', 'build', cb))
-
-gulp.task('watch', () => gulp.watch('{src,test}/**/*', ['cleanbuild']))
-
-gulp.task('default', ['cleanbuild'], () => gulp.start('watch'))
+gulp.task('default', ['build'], () => gulp.start('watch'))
