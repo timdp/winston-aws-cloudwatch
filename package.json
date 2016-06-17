@@ -48,6 +48,7 @@
     "gulp-plumber": "^1.1.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-standard": "^7.0.1",
+    "in-publish": "^2.0.0",
     "isparta": "^4.0.0",
     "pinkie": "^2.0.4",
     "run-sequence": "^1.2.1",
@@ -60,7 +61,7 @@
     "index.js"
   ],
   "scripts": {
-    "prepublish": "npm run clean && npm run build",
+    "prepublish": "in-publish && npm run build || not-in-publish",
     "clean": "gulp clean",
     "build": "gulp build",
     "test": "gulp test"
