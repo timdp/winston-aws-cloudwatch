@@ -24,7 +24,7 @@ gulp.task('transpile', () => {
 })
 
 gulp.task('lint', () => {
-  return gulp.src('src/**/*.js')
+  return gulp.src('{src,test}/**/*.js')
     .pipe(plumb())
     .pipe($.standard())
     .pipe($.standard.reporter('default', {breakOnError: false}))
