@@ -21,7 +21,10 @@ winston.add(CloudWatchTransport, {
     region: '...'
   },
   formatLogItem: function (item) {
-    return item.level + ': ' + item.message + ' ' + JSON.stringify(item.meta)
+    return {
+      message: item.level + ': ' + item.message + ' ' + JSON.stringify(item.meta),
+      timestamp: item.date
+    }
   }
 })
 ```
