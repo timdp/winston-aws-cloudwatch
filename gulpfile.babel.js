@@ -3,10 +3,12 @@ import loadPlugins from 'gulp-load-plugins'
 import {Instrumenter} from 'isparta'
 import del from 'del'
 import seq from 'run-sequence'
+import yargs from 'yargs'
 
 const COVERAGE_THRESHOLDS = {global: 100}
 
 const $ = loadPlugins()
+const argv = yargs.string('grep').argv
 
 const plumb = () => $.if(!process.env.CI, $.plumber({
   errorHandler: $.notify.onError('<%= error.message %>')
@@ -39,7 +41,10 @@ gulp.task('pre-coverage', () => {
 gulp.task('coverage', ['pre-coverage'], () => {
   return gulp.src(['test/lib/setup.js', 'test/{unit,integration}/**/*.js', '!**/_*.js'], {read: false})
     .pipe(plumb())
-    .pipe($.mocha({reporter: 'spec'}))
+    .pipe($.mocha({
+      reporter: 'spec',
+      grep: argv.grep
+    }))
     .pipe($.istanbul.writeReports())
     .pipe($.istanbul.enforceThresholds({thresholds: COVERAGE_THRESHOLDS}))
 })
