@@ -1,6 +1,5 @@
 'use strict'
 
-import sinon from 'sinon'
 import defaults from 'defaults'
 import CloudWatchClient from '../../src/lib/cloudwatch-client'
 import LogItem from '../../src/lib/log-item'
@@ -138,6 +137,22 @@ describe('CloudWatchClient', () => {
     })
   })
 
+  describe('#options.formatLog', () => {
+    it('uses the custom formatter', () => {
+      const formatLog = sinon.spy((item) => {
+        return `CUSTOM__${JSON.stringify(item)}`
+      })
+      const client = createClient({
+        clientOptions: {formatLog}
+      })
+      const batch = createBatch(1)
+      return expect(
+          client.submit(batch)
+            .then(() => formatLog.calledOnce)
+        ).to.eventually.equal(true)
+    })
+  })
+
   describe('#options.formatLogItem', () => {
     it('uses the custom formatter', () => {
       const formatLogItem = sinon.spy((item) => {
@@ -154,6 +169,26 @@ describe('CloudWatchClient', () => {
           client.submit(batch)
             .then(() => formatLogItem.calledOnce)
         ).to.eventually.equal(true)
+    })
+
+    it('does not use the custom formatter if formatLog is specified', () => {
+      const formatLog = sinon.spy((item) => {
+        return `CUSTOM__${JSON.stringify(item)}`
+      })
+      const formatLogItem = sinon.spy((item) => {
+        return {
+          timestamp: item.date,
+          message: `CUSTOM__${JSON.stringify(item)}`
+        }
+      })
+      const client = createClient({
+        clientOptions: {formatLog, formatLogItem}
+      })
+      const batch = createBatch(1)
+      return expect(
+          client.submit(batch)
+            .then(() => formatLogItem.calledOnce)
+        ).to.eventually.equal(false)
     })
   })
 

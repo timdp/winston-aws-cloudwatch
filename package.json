@@ -81,7 +81,8 @@
       "before",
       "after",
       "beforeEach",
-      "afterEach"
+      "afterEach",
+      "sinon"
     ]
   }
 }

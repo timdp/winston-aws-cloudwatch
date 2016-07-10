@@ -3,14 +3,22 @@
 import isEmpty from 'lodash.isempty'
 
 export default class CloudWatchEventFormatter {
-  static formatLogItem (item) {
+  constructor ({formatLog, formatLogItem} = {}) {
+    if (typeof formatLog === 'function') {
+      this.formatLog = formatLog
+    } else if (typeof formatLogItem === 'function') {
+      this.formatLogItem = formatLogItem
+    }
+  }
+
+  formatLogItem (item) {
     return {
-      message: CloudWatchEventFormatter._logItemToCloudWatchMessage(item),
+      message: this.formatLog(item),
       timestamp: item.date
     }
   }
 
-  static _logItemToCloudWatchMessage (item) {
+  formatLog (item) {
     const meta = isEmpty(item.meta) ? ''
       : ' ' + JSON.stringify(item.meta, null, 2)
     return `[${item.level.toUpperCase()}] ${item.message}${meta}`
