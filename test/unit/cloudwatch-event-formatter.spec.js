@@ -12,7 +12,7 @@ describe('CloudWatchEventFormatter', () => {
     })
   })
 
-  describe('#formatLogItem', () => {
+  describe('#formatLogItem()', () => {
     let formatter
 
     beforeEach(() => {
