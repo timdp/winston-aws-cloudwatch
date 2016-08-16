@@ -54,7 +54,7 @@
     "run-sequence": "^1.2.1",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0",
-    "yargs": "^4.7.1"
+    "yargs": "^5.0.0"
   },
   "main": "index.js",
   "files": [
