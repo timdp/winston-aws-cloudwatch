@@ -44,7 +44,7 @@
     "gulp-load-plugins": "^1.2.4",
     "gulp-mocha": "^3.0.0",
     "gulp-sourcemaps": "^1.6.0",
-    "gulp-standard": "^7.0.1",
+    "gulp-standard": "^8.0.1",
     "in-publish": "^2.0.0",
     "isparta": "^4.0.0",
     "pinkie": "^2.0.4",
