@@ -5,7 +5,12 @@ import del from 'del'
 import seq from 'run-sequence'
 import yargs from 'yargs'
 
-const COVERAGE_THRESHOLDS = {global: 100}
+const COVERAGE_THRESHOLDS = {
+  lines: 100,
+  statements: 100,
+  functions: 100,
+  branches: 95 // Babel introduces some condition that doesn't get hit
+}
 
 const $ = loadPlugins()
 const argv = yargs.string('grep').argv
