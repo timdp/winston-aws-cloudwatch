@@ -1,6 +1,6 @@
 import gulp from 'gulp'
 import loadPlugins from 'gulp-load-plugins'
-import {Instrumenter} from 'isparta'
+import { Instrumenter } from 'isparta'
 import del from 'del'
 import seq from 'run-sequence'
 import yargs from 'yargs'
@@ -28,12 +28,12 @@ gulp.task('transpile', () => {
 gulp.task('lint', () => {
   return gulp.src('{src,test}/**/*.js')
     .pipe($.standard())
-    .pipe($.standard.reporter('default', {breakOnError: false}))
+    .pipe($.standard.reporter('default', { breakOnError: false }))
 })
 
 gulp.task('pre-coverage', () => {
   return gulp.src('src/**/*.js')
-    .pipe($.istanbul({instrumenter: Instrumenter}))
+    .pipe($.istanbul({ instrumenter: Instrumenter }))
     .pipe($.istanbul.hookRequire())
 })
 
@@ -44,7 +44,7 @@ gulp.task('coverage', ['pre-coverage'], () => {
       grep: argv.grep
     }))
     .pipe($.istanbul.writeReports())
-    .pipe($.istanbul.enforceThresholds({thresholds: COVERAGE_THRESHOLDS}))
+    .pipe($.istanbul.enforceThresholds({ thresholds: COVERAGE_THRESHOLDS }))
 })
 
 gulp.task('test', (cb) => seq('lint', 'coverage', cb))
