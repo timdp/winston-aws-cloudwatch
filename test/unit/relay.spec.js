@@ -2,7 +2,7 @@
 
 import delay from 'delay'
 import ClientMock from '../lib/client-mock'
-import Relay from '../../src/lib/relay'
+import Relay from '../../src/relay'
 
 describe('Relay', () => {
   describe('#start()', () => {

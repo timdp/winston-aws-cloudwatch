@@ -1,9 +1,9 @@
 'use strict'
 
 import {Transport} from 'winston'
-import CloudWatchClient from './lib/cloudwatch-client'
-import LogItem from './lib/log-item'
-import Relay from './lib/relay'
+import CloudWatchClient from './cloudwatch-client'
+import LogItem from './log-item'
+import Relay from './relay'
 
 class CloudWatchTransport extends Transport {
   constructor (options) {

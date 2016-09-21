@@ -1,6 +1,6 @@
 'use strict'
 
-import Queue from '../../src/lib/queue'
+import Queue from '../../src/queue'
 
 describe('Queue', () => {
   describe('#size', () => {

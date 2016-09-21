@@ -1,6 +1,6 @@
 'use strict'
 
-import LogItem from '../../src/lib/log-item'
+import LogItem from '../../src/log-item'
 
 describe('LogItem', () => {
   describe('#date', () => {

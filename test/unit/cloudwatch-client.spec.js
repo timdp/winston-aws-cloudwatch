@@ -1,8 +1,8 @@
 'use strict'
 
 import defaults from 'defaults'
-import CloudWatchClient from '../../src/lib/cloudwatch-client'
-import LogItem from '../../src/lib/log-item'
+import CloudWatchClient from '../../src/cloudwatch-client'
+import LogItem from '../../src/log-item'
 
 const logGroupName = 'testGroup'
 const logStreamName = 'testStream'
