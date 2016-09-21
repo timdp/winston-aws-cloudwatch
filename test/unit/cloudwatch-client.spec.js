@@ -10,16 +10,16 @@ const logStreamName = 'testStream'
 let tokens = 0
 let streams = 0
 
-const withPromise = (res) => ({ promise: () => res })
+const withPromise = (res) => ({promise: () => res})
 
 const mapRequest = (stub, includeExpected, token, nextToken) => {
   const suffixes = [++streams, ++streams, includeExpected ? '' : ++streams]
   const res = Promise.resolve({
-    logStreams: suffixes.map((suf) => ({ logStreamName: logStreamName + suf })),
+    logStreams: suffixes.map((suf) => ({logStreamName: logStreamName + suf})),
     nextToken
   })
   if (token) {
-    stub.withArgs(sinon.match({ nextToken: token }))
+    stub.withArgs(sinon.match({nextToken: token}))
       .returns(withPromise(res))
   } else {
     stub.returns(withPromise(res))
@@ -59,7 +59,7 @@ const createClient = (options) => {
   const client = new CloudWatchClient(logGroupName, logStreamName,
     options.clientOptions)
   sinon.stub(client._client, 'putLogEvents')
-    .returns(withPromise(Promise.resolve({ nextSequenceToken: 'token42' })))
+    .returns(withPromise(Promise.resolve({nextSequenceToken: 'token42'})))
   sinon.stub(client._client, 'createLogGroup')
     .returns(withPromise(options.groupErrorCode
       ? Promise.reject(createErrorWithCode(options.groupErrorCode))
@@ -76,7 +76,7 @@ const createClient = (options) => {
 const createBatch = (size) => {
   const batch = []
   for (let i = 0; i < size; ++i) {
-    batch.push(new LogItem(+new Date(), 'info', 'Test', { foo: 'bar' }))
+    batch.push(new LogItem(+new Date(), 'info', 'Test', {foo: 'bar'}))
   }
   return batch
 }
@@ -127,7 +127,7 @@ describe('CloudWatchClient', () => {
   describe('#options.maxSequenceTokenAge', () => {
     it('caches the sequence token', () => {
       const client = createClient({
-        clientOptions: { maxSequenceTokenAge: 1000 }
+        clientOptions: {maxSequenceTokenAge: 1000}
       })
       return expect(
           client.submit(createBatch(1))
@@ -143,7 +143,7 @@ describe('CloudWatchClient', () => {
         return `CUSTOM__${JSON.stringify(item)}`
       })
       const client = createClient({
-        clientOptions: { formatLog }
+        clientOptions: {formatLog}
       })
       const batch = createBatch(1)
       return expect(
@@ -162,7 +162,7 @@ describe('CloudWatchClient', () => {
         }
       })
       const client = createClient({
-        clientOptions: { formatLogItem }
+        clientOptions: {formatLogItem}
       })
       const batch = createBatch(1)
       return expect(
@@ -182,7 +182,7 @@ describe('CloudWatchClient', () => {
         }
       })
       const client = createClient({
-        clientOptions: { formatLog, formatLogItem }
+        clientOptions: {formatLog, formatLogItem}
       })
       const batch = createBatch(1)
       return expect(
@@ -195,7 +195,7 @@ describe('CloudWatchClient', () => {
   describe('#options.createLogGroup', () => {
     it('creates the log group', () => {
       const client = createClient({
-        clientOptions: { createLogGroup: true }
+        clientOptions: {createLogGroup: true}
       })
       const batch = createBatch(1)
       return expect(
@@ -206,7 +206,7 @@ describe('CloudWatchClient', () => {
 
     it('does not throw if the log group already exists', () => {
       const client = createClient({
-        clientOptions: { createLogGroup: true },
+        clientOptions: {createLogGroup: true},
         groupErrorCode: 'ResourceAlreadyExistsException'
       })
       const batch = createBatch(1)
@@ -217,7 +217,7 @@ describe('CloudWatchClient', () => {
 
     it('throws if another error occurs', () => {
       const client = createClient({
-        clientOptions: { createLogGroup: true },
+        clientOptions: {createLogGroup: true},
         groupErrorCode: 'UnicornDoesNotExistException'
       })
       const batch = createBatch(1)
@@ -230,7 +230,7 @@ describe('CloudWatchClient', () => {
   describe('#options.createLogStream', () => {
     it('creates the log stream', () => {
       const client = createClient({
-        clientOptions: { createLogStream: true }
+        clientOptions: {createLogStream: true}
       })
       const batch = createBatch(1)
       return expect(
@@ -241,7 +241,7 @@ describe('CloudWatchClient', () => {
 
     it('does not throw if the log stream already exists', () => {
       const client = createClient({
-        clientOptions: { createLogStream: true },
+        clientOptions: {createLogStream: true},
         streamErrorCode: 'ResourceAlreadyExistsException'
       })
       const batch = createBatch(1)
@@ -252,7 +252,7 @@ describe('CloudWatchClient', () => {
 
     it('throws if another error occurs', () => {
       const client = createClient({
-        clientOptions: { createLogStream: true },
+        clientOptions: {createLogStream: true},
         streamErrorCode: 'UnicornDoesNotExistException'
       })
       const batch = createBatch(1)

@@ -1,6 +1,6 @@
 'use strict'
 
-import { Transport } from 'winston'
+import {Transport} from 'winston'
 import CloudWatchClient from './lib/cloudwatch-client'
 import LogItem from './lib/log-item'
 import Relay from './lib/relay'

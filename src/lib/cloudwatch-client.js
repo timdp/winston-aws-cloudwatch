@@ -10,7 +10,7 @@ import CloudWatchEventFormatter from './cloudwatch-event-formatter'
 
 export default class CloudWatchClient {
   constructor (logGroupName, logStreamName, options) {
-    debug('constructor', { logGroupName, logStreamName, options })
+    debug('constructor', {logGroupName, logStreamName, options})
     this._logGroupName = logGroupName
     this._logStreamName = logStreamName
     this._options = defaults(options, {
@@ -28,11 +28,11 @@ export default class CloudWatchClient {
   }
 
   submit (batch) {
-    debug('submit', { batch })
+    debug('submit', {batch})
     return this._initialize()
       .then(() => this._getSequenceToken())
       .then((sequenceToken) => this._putLogEvents(batch, sequenceToken))
-      .then(({ nextSequenceToken }) => this._storeSequenceToken(nextSequenceToken))
+      .then(({nextSequenceToken}) => this._storeSequenceToken(nextSequenceToken))
   }
 
   _initialize () {
@@ -73,7 +73,7 @@ export default class CloudWatchClient {
   }
 
   _putLogEvents (batch, sequenceToken) {
-    debug('putLogEvents', { batch, sequenceToken })
+    debug('putLogEvents', {batch, sequenceToken})
     const params = {
       logGroupName: this._logGroupName,
       logStreamName: this._logStreamName,
@@ -94,27 +94,27 @@ export default class CloudWatchClient {
   _fetchAndStoreSequenceToken () {
     debug('fetchSequenceToken')
     return this._findLogStream()
-      .then(({ uploadSequenceToken }) => this._storeSequenceToken(uploadSequenceToken))
+      .then(({uploadSequenceToken}) => this._storeSequenceToken(uploadSequenceToken))
   }
 
   _storeSequenceToken (sequenceToken) {
-    debug('storeSequenceToken', { sequenceToken })
+    debug('storeSequenceToken', {sequenceToken})
     const date = +new Date()
-    this._sequenceTokenInfo = { sequenceToken, date }
+    this._sequenceTokenInfo = {sequenceToken, date}
     return sequenceToken
   }
 
   _findLogStream (nextToken) {
-    debug('findLogStream', { nextToken })
+    debug('findLogStream', {nextToken})
     const params = {
       logGroupName: this._logGroupName,
       logStreamNamePrefix: this._logStreamName,
       nextToken
     }
     return this._client.describeLogStreams(params).promise()
-      .then(({ logStreams, nextToken }) => {
+      .then(({logStreams, nextToken}) => {
         const match = find(logStreams,
-          ({ logStreamName }) => (logStreamName === this._logStreamName))
+          ({logStreamName}) => (logStreamName === this._logStreamName))
         if (match) {
           return match
         }
