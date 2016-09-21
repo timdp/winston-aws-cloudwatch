@@ -55,16 +55,39 @@ describe('Relay', () => {
 
     it('emits an error event', async () => {
       const submissionInterval = 50
-      const failures = 3
-      const retries = 2
+      const failures = ['FAIL', 'FAIL', 'FAIL']
       const spy = sinon.spy()
       const client = new ClientMock(failures)
       const relay = new Relay(client, {submissionInterval})
       relay.on('error', spy)
       relay.start()
       relay.submit({})
-      await delay(submissionInterval * (failures + retries) * 1.1)
-      expect(spy.callCount).to.equal(failures)
+      await delay(submissionInterval * failures.length * 1.1)
+      expect(spy.callCount).to.equal(failures.length)
+    })
+
+    it('silently handles a DataAlreadyAcceptedException error', async () => {
+      const submissionInterval = 50
+      const failures = ['DataAlreadyAcceptedException']
+      const spy = sinon.spy()
+      const client = new ClientMock(failures)
+      const relay = new Relay(client, {submissionInterval})
+      relay.on('error', spy)
+      relay.start()
+      relay.submit({})
+      await delay(submissionInterval * failures.length * 1.1)
+      expect(spy.callCount).to.equal(0)
+    })
+
+    it('handles InvalidSequenceTokenException errors by retrying', async () => {
+      const submissionInterval = 50
+      const failures = ['InvalidSequenceTokenException', 'InvalidSequenceTokenException']
+      const client = new ClientMock(failures)
+      const relay = new Relay(client, {submissionInterval})
+      relay.start()
+      relay.submit({})
+      await delay(submissionInterval * (failures.length + 1) * 1.1)
+      expect(client.submitted.length).to.equal(1)
     })
   })
 })

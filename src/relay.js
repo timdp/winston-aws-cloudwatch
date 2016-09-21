@@ -51,7 +51,7 @@ export default class Relay extends EventEmitter {
     const num = batch.length
     debug(`submit: submitting ${num} item(s)`)
     return this._client.submit(batch)
-      .then(() => this._onSubmitted(num), (err) => this._onError(err))
+      .then(() => this._onSubmitted(num), (err) => this._onError(err, num))
       .then(() => this._scheduleSubmission())
   }
 
@@ -60,8 +60,19 @@ export default class Relay extends EventEmitter {
     this._queue.remove(num)
   }
 
-  _onError (err) {
+  _onError (err, num) {
     debug('onError', {error: err})
-    this.emit('error', err)
+    // Expected errors:
+    // - DataAlreadyAcceptedException
+    //   Message: "The given batch of log events has already been accepted."
+    //   Action: Assume the request got replayed and remove the batch.
+    // - InvalidSequenceTokenException
+    //   Message: "The given sequenceToken is invalid."
+    //   Action: Keep the items in the queue and retry next time.
+    if (err.code === 'DataAlreadyAcceptedException') {
+      this._queue.remove(num)
+    } else if (err.code !== 'InvalidSequenceTokenException') {
+      this.emit('error', err)
+    }
   }
 }

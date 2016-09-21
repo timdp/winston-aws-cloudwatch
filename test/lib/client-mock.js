@@ -1,16 +1,19 @@
 export default class MockClient {
-  constructor (failures = 0) {
+  constructor (failures = []) {
     this._submitted = []
-    this._failures = failures
+    this._failures = failures.slice()
   }
 
   submit (batch) {
-    this._submitted = this._submitted.concat(batch)
-    if (this._failures > 0) {
-      this._failures--
-      return Promise.reject(new Error('FAIL'))
+    if (this._failures.length === 0) {
+      this._submitted = this._submitted.concat(batch)
+      return Promise.resolve()
+    } else {
+      const code = this._failures.shift()
+      const error = new Error(code)
+      error.code = code
+      return Promise.reject(error)
     }
-    return Promise.resolve()
   }
 
   get submitted () {
