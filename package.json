@@ -15,7 +15,7 @@
   ],
   "author": "Tim De Pauw <hi@tmdpw.eu> (https://tmdpw.eu/)",
   "engines": {
-    "node": ">=0.12.0"
+    "node": ">=4"
   },
   "dependencies": {
     "aws-sdk": "^2.6.6",
@@ -78,11 +78,6 @@
       "beforeEach",
       "afterEach",
       "sinon"
-    ]
-  },
-  "greenkeeper": {
-    "ignore": [
-      "gulp-standard"
     ]
   }
 }
