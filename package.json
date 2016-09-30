@@ -50,7 +50,7 @@
     "run-sequence": "^1.2.1",
     "sinon": "^1.17.6",
     "sinon-chai": "^2.8.0",
-    "yargs": "^5.0.0"
+    "yargs": "^6.0.0"
   },
   "main": "index.js",
   "files": [
