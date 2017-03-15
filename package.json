@@ -47,7 +47,7 @@
     "isparta": "^4.0.0",
     "pinkie": "^2.0.4",
     "run-sequence": "^1.2.1",
-    "sinon": "^1.17.7",
+    "sinon": "^2.0.0",
     "sinon-chai": "^2.8.0",
     "yargs": "^6.6.0"
   },
