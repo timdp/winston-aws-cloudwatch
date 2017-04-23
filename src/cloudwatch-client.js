@@ -1,12 +1,12 @@
 'use strict'
 
 import _debug from 'debug'
-const debug = _debug('winston-aws-cloudwatch:CloudWatchClient')
-
 import AWS from 'aws-sdk'
 import defaults from 'defaults'
 import find from 'lodash.find'
 import CloudWatchEventFormatter from './cloudwatch-event-formatter'
+
+const debug = _debug('winston-aws-cloudwatch:CloudWatchClient')
 
 export default class CloudWatchClient {
   constructor (logGroupName, logStreamName, options) {

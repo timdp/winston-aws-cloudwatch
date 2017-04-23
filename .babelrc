@@ -1,4 +1,9 @@
 {
   "presets": [["env", {"targets": {"node": 4}}]],
-  "plugins": ["transform-runtime"]
+  "plugins": ["transform-runtime"],
+  "env": {
+    "test": {
+      "plugins": ["istanbul"]
+    }
+  }
 }

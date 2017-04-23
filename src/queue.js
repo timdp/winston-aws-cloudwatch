@@ -1,6 +1,7 @@
 'use strict'
 
 import _debug from 'debug'
+
 const debug = _debug('winston-aws-cloudwatch:Queue')
 
 export default class Queue {
