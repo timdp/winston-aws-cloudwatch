@@ -3,5 +3,6 @@ machine:
     NPM_CONFIG_PROGRESS: 'false'
 test:
   override:
-    - nvm use 4 && npm test
-    - nvm use 6 && npm test && coveralls
+    - npm run test:lint
+    - nvm use 4 && npm run test:unit
+    - nvm use 6 && npm run test:ci
