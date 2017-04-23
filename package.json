@@ -59,7 +59,7 @@
     "test:unit": "mocha --compilers js:babel-register test/lib/setup.js test/**/*.spec.js",
     "test:cover": "nyc npm run test:unit",
     "test:ci": "npm run test:ci:cover && npm run test:ci:report",
-    "test:ci:cover": "npm mocha --reporter mocha-junit-reporter --compilers js:babel-register test/lib/setup.js test/**/*.spec.js",
+    "test:ci:cover": "nyc mocha --reporter mocha-junit-reporter --compilers js:babel-register test/lib/setup.js test/**/*.spec.js",
     "test:ci:report": "nyc report --reporter text-lcov | coveralls",
     "dev": "babel src --out-dir lib --watch"
   },
