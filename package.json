@@ -21,7 +21,7 @@
     "aws-sdk": "^2.45.0",
     "babel-runtime": "^6.23.0",
     "bottleneck": "^1.15.1",
-    "debug": "^2.6.4",
+    "debug": "2.6.4",
     "defaults": "^1.0.3",
     "lodash.find": "^4.4.0",
     "lodash.isempty": "^4.2.1",
