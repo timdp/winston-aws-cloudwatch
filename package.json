@@ -42,7 +42,7 @@
     "nyc": "^10.2.0",
     "rimraf": "^2.6.1",
     "run-sequence": "^1.2.1",
-    "sinon": "^2.1.0",
+    "sinon": "2.1.0",
     "sinon-chai": "^2.9.0",
     "standard": "^10.0.2"
   },
