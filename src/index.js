@@ -16,8 +16,7 @@ class CloudWatchTransport extends Transport {
   }
 
   log (level, msg, meta, callback) {
-    this._relay.submit(new LogItem(+new Date(), level, msg, meta))
-    callback(null, true)
+    this._relay.submit(new LogItem(+new Date(), level, msg, meta, callback))
   }
 }
 

@@ -1,11 +1,12 @@
 'use strict'
 
 export default class LogItem {
-  constructor (date, level, message, meta) {
+  constructor (date, level, message, meta, callback) {
     this._date = date
     this._level = level
     this._message = message
     this._meta = meta
+    this._callback = callback
   }
 
   get date () {
@@ -22,5 +23,9 @@ export default class LogItem {
 
   get meta () {
     return this._meta
+  }
+
+  get callback () {
+    return this._callback
   }
 }

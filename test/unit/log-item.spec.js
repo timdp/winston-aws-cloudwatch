@@ -9,7 +9,8 @@ describe('LogItem', () => {
       const level = 'info'
       const message = 'Hello, world'
       const meta = {}
-      const item = new LogItem(date, level, message, meta)
+      const callback = () => {}
+      const item = new LogItem(date, level, message, meta, callback)
       expect(item.date).to.equal(date)
     })
   })
@@ -20,7 +21,8 @@ describe('LogItem', () => {
       const level = 'info'
       const message = 'Hello, world'
       const meta = {}
-      const item = new LogItem(date, level, message, meta)
+      const callback = () => {}
+      const item = new LogItem(date, level, message, meta, callback)
       expect(item.level).to.equal(level)
     })
   })
@@ -31,7 +33,8 @@ describe('LogItem', () => {
       const level = 'info'
       const message = 'Hello, world'
       const meta = {}
-      const item = new LogItem(date, level, message, meta)
+      const callback = () => {}
+      const item = new LogItem(date, level, message, meta, callback)
       expect(item.message).to.equal(message)
     })
   })
@@ -42,8 +45,21 @@ describe('LogItem', () => {
       const level = 'info'
       const message = 'Hello, world'
       const meta = {}
-      const item = new LogItem(date, level, message, meta)
+      const callback = () => {}
+      const item = new LogItem(date, level, message, meta, callback)
       expect(item.meta).to.deep.equal(meta)
+    })
+  })
+
+  describe('#callback', () => {
+    it('returns the item\'s callback function', () => {
+      const date = +new Date()
+      const level = 'info'
+      const message = 'Hello, world'
+      const meta = {}
+      const callback = () => {}
+      const item = new LogItem(date, level, message, meta, callback)
+      expect(item.callback).to.equal(callback)
     })
   })
 })

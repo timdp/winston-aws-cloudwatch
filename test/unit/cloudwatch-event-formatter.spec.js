@@ -21,7 +21,7 @@ describe('CloudWatchEventFormatter', () => {
 
     it('formats a log item with metadata', () => {
       const date = 123456789
-      const item = new LogItem(date, 'info', 'Hello, world', {foo: 'bar'})
+      const item = new LogItem(date, 'info', 'Hello, world', {foo: 'bar'}, () => {})
       const event = formatter.formatLogItem(item)
       expect(event.timestamp).to.equal(date)
       expect(event.message).to.equal(`[INFO] Hello, world {
@@ -39,7 +39,7 @@ describe('CloudWatchEventFormatter', () => {
 
     it('formats a log message with metadata', () => {
       const date = 123456789
-      const item = new LogItem(date, 'info', 'Hello, world', {foo: 'bar'})
+      const item = new LogItem(date, 'info', 'Hello, world', {foo: 'bar'}, () => {})
       const msg = formatter.formatLog(item)
       expect(msg).to.equal(`[INFO] Hello, world {
   "foo": "bar"
@@ -47,13 +47,13 @@ describe('CloudWatchEventFormatter', () => {
     })
 
     it('omits metadata when undefined', () => {
-      const item = new LogItem(+new Date(), 'info', 'Hello, world')
+      const item = new LogItem(+new Date(), 'info', 'Hello, world', undefined, () => {})
       const msg = formatter.formatLog(item)
       expect(msg).to.equal('[INFO] Hello, world')
     })
 
     it('omits metadata when empty', () => {
-      const item = new LogItem(+new Date(), 'info', 'Hello, world', {})
+      const item = new LogItem(+new Date(), 'info', 'Hello, world', {}, () => {})
       const msg = formatter.formatLog(item)
       expect(msg).to.equal('[INFO] Hello, world')
     })

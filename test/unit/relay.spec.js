@@ -4,6 +4,8 @@ import delay from 'delay'
 import ClientMock from '../lib/client-mock'
 import Relay from '../../src/relay'
 
+const createItem = () => ({ callback: sinon.spy() })
+
 describe('Relay', () => {
   describe('#start()', () => {
     it('can only be called once', () => {
@@ -19,12 +21,28 @@ describe('Relay', () => {
       const client = new ClientMock()
       const relay = new Relay(client, {submissionInterval})
       relay.start()
-      const items = [{}, {}, {}]
+      const items = [createItem(), createItem(), createItem()]
       for (const item of items) {
         relay.submit(item)
       }
       await delay(submissionInterval * 1.1)
       expect(client.submitted).to.deep.equal(items)
+    })
+
+    it('calls the callback function for every item', async () => {
+      const submissionInterval = 50
+      const client = new ClientMock()
+      const relay = new Relay(client, {submissionInterval})
+      relay.start()
+      const items = [createItem(), createItem(), createItem()]
+      for (const item of items) {
+        relay.submit(item)
+      }
+      await delay(submissionInterval * 1.1)
+      expect(items.map((item) => item.callback.calledOnce))
+        .to.deep.equal(new Array(items.length).fill(true))
+      expect(items.map((item) => item.callback.args[0]))
+        .to.deep.equal(new Array(items.length).fill([null, true]))
     })
 
     it('throttles submissions', async () => {
@@ -36,7 +54,7 @@ describe('Relay', () => {
       relay.start()
 
       for (let i = 0; i < batchSize * batches; ++i) {
-        relay.submit({})
+        relay.submit(createItem())
       }
 
       const counts = []
@@ -61,7 +79,7 @@ describe('Relay', () => {
       const relay = new Relay(client, {submissionInterval})
       relay.on('error', spy)
       relay.start()
-      relay.submit({})
+      relay.submit(createItem())
       await delay(submissionInterval * failures.length * 1.1)
       expect(spy.callCount).to.equal(failures.length)
     })
@@ -74,7 +92,7 @@ describe('Relay', () => {
       const relay = new Relay(client, {submissionInterval})
       relay.on('error', spy)
       relay.start()
-      relay.submit({})
+      relay.submit(createItem())
       await delay(submissionInterval * failures.length * 1.1)
       expect(spy.callCount).to.equal(0)
     })
@@ -85,7 +103,7 @@ describe('Relay', () => {
       const client = new ClientMock(failures)
       const relay = new Relay(client, {submissionInterval})
       relay.start()
-      relay.submit({})
+      relay.submit(createItem())
       expect(client.submitted.length).to.equal(0, 'Submitted too early')
       await delay(submissionInterval * (failures.length + 1) * 1.1)
       expect(client.submitted.length).to.equal(1, 'Not submitted')

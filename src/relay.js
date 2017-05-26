@@ -48,19 +48,22 @@ export default class Relay extends EventEmitter {
       return Promise.resolve()
     }
     const batch = this._queue.head(this._options.batchSize)
-    const num = batch.length
-    debug(`submit: submitting ${num} item(s)`)
+    debug(`submit: submitting ${batch.length} item(s)`)
     return this._client.submit(batch)
-      .then(() => this._onSubmitted(num), (err) => this._onError(err, num))
+      .then(() => this._onSubmitted(batch), (err) => this._onError(err, batch))
       .then(() => this._scheduleSubmission())
   }
 
-  _onSubmitted (num) {
-    debug('onSubmitted', {num})
-    this._queue.remove(num)
+  _onSubmitted (batch) {
+    debug('onSubmitted', {batch})
+    this._queue.remove(batch.length)
+    for (let i = 0; i < batch.length; ++i) {
+      const item = batch[i]
+      item.callback(null, true)
+    }
   }
 
-  _onError (err, num) {
+  _onError (err, batch) {
     debug('onError', {error: err})
     // Expected errors:
     // - DataAlreadyAcceptedException
@@ -70,7 +73,7 @@ export default class Relay extends EventEmitter {
     //   Message: "The given sequenceToken is invalid."
     //   Action: Keep the items in the queue and retry next time.
     if (err.code === 'DataAlreadyAcceptedException') {
-      this._queue.remove(num)
+      this._queue.remove(batch.length)
     } else if (err.code !== 'InvalidSequenceTokenException') {
       this.emit('error', err)
     }

@@ -76,7 +76,7 @@ const createClient = (options) => {
 const createBatch = (size) => {
   const batch = []
   for (let i = 0; i < size; ++i) {
-    batch.push(new LogItem(+new Date(), 'info', 'Test', {foo: 'bar'}))
+    batch.push(new LogItem(+new Date(), 'info', 'Test', {foo: 'bar'}, () => {}))
   }
   return batch
 }
