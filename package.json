@@ -32,7 +32,7 @@
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.5.1",
     "babel-register": "^6.24.1",
-    "chai": "^3.5.0",
+    "chai": "^4.0.2",
     "chai-as-promised": "^6.0.0",
     "coveralls": "^2.13.1",
     "del": "^2.2.0",
