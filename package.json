@@ -33,7 +33,7 @@
     "babel-preset-env": "^1.5.1",
     "babel-register": "^6.24.1",
     "chai": "^3.5.0",
-    "chai-as-promised": "^6.0.0",
+    "chai-as-promised": "^7.0.0",
     "coveralls": "^2.13.1",
     "del": "^2.2.0",
     "delay": "^2.0.0",
