@@ -41,7 +41,7 @@
     "mocha-junit-reporter": "^1.13.0",
     "nyc": "^11.0.3",
     "rimraf": "^2.6.1",
-    "sinon": "^2.3.1",
+    "sinon": "^3.0.0",
     "sinon-chai": "^2.10.0",
     "standard": "^10.0.2"
   },
