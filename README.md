@@ -15,6 +15,8 @@ winston.add(CloudWatchTransport, {
   logStreamName: '...', // REQUIRED
   createLogGroup: true,
   createLogStream: true,
+  submissionInterval: 2000,
+  batchSize: 20,
   awsConfig: {
     accessKeyId: '...',
     secretAccessKey: '...',

@@ -10,7 +10,7 @@ class CloudWatchTransport extends Transport {
     super(options)
     const client = new CloudWatchClient(options.logGroupName,
       options.logStreamName, options)
-    this._relay = new Relay(client)
+    this._relay = new Relay(client, options)
     this._relay.on('error', (err) => this.emit('error', err))
     this._relay.start()
   }
