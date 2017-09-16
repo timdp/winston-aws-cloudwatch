@@ -15,14 +15,18 @@ export default class CloudWatchClient {
     this._logStreamName = logStreamName
     this._options = defaults(options, {
       awsConfig: null,
-      maxSequenceTokenAge: -1,
       formatLog: null,
       formatLogItem: null,
       createLogGroup: false,
       createLogStream: false
     })
     this._formatter = new CloudWatchEventFormatter(this._options)
-    this._sequenceTokenInfo = null
+
+    this._sequenceTokenInfo = {
+      date: null,
+      sequenceToken: null
+    }
+
     this._client = new AWS.CloudWatchLogs(this._options.awsConfig)
     this._initializing = null
   }
@@ -84,11 +88,8 @@ export default class CloudWatchClient {
   }
 
   _getSequenceToken () {
-    const now = +new Date()
-    const isStale = (!this._sequenceTokenInfo ||
-      this._sequenceTokenInfo.date + this._options.maxSequenceTokenAge < now)
-    return isStale ? this._fetchAndStoreSequenceToken()
-      : Promise.resolve(this._sequenceTokenInfo.sequenceToken)
+    const isCached = this._sequenceTokenInfo.sequenceToken
+    return isCached ? this._sequenceTokenInfo.sequenceToken : this._fetchAndStoreSequenceToken()
   }
 
   _fetchAndStoreSequenceToken () {
