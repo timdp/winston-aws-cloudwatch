@@ -15,14 +15,14 @@ export default class CloudWatchClient {
     this._logStreamName = logStreamName
     this._options = defaults(options, {
       awsConfig: null,
-      maxSequenceTokenAge: -1,
       formatLog: null,
       formatLogItem: null,
       createLogGroup: false,
-      createLogStream: false
+      createLogStream: false,
+      submissionRetryCount: 1
     })
     this._formatter = new CloudWatchEventFormatter(this._options)
-    this._sequenceTokenInfo = null
+    this._sequenceToken = null
     this._client = new AWS.CloudWatchLogs(this._options.awsConfig)
     this._initializing = null
   }
@@ -30,9 +30,7 @@ export default class CloudWatchClient {
   submit (batch) {
     debug('submit', {batch})
     return this._initialize()
-      .then(() => this._getSequenceToken())
-      .then((sequenceToken) => this._putLogEvents(batch, sequenceToken))
-      .then(({nextSequenceToken}) => this._storeSequenceToken(nextSequenceToken))
+      .then(() => this._doSubmit(batch, 0))
   }
 
   _initialize () {
@@ -67,12 +65,43 @@ export default class CloudWatchClient {
   }
 
   _allowResourceAlreadyExistsException (err) {
-    if (err.code !== 'ResourceAlreadyExistsException') {
-      throw err
-    }
+    return (err.code === 'ResourceAlreadyExistsException')
+      ? Promise.resolve()
+      : Promise.reject(err)
   }
 
-  _putLogEvents (batch, sequenceToken) {
+  _doSubmit (batch, retryCount) {
+    return this._maybeUpdateSequenceToken()
+      .then(() => this._putLogEventsAndStoreSequenceToken(batch))
+      .catch((err) => this._handlePutError(err, batch, retryCount))
+  }
+
+  _maybeUpdateSequenceToken () {
+    return (this._sequenceToken != null)
+      ? Promise.resolve()
+      : this._fetchAndStoreSequenceToken()
+  }
+
+  _handlePutError (err, batch, retryCount) {
+    if (err.code !== 'InvalidSequenceTokenException') {
+      return Promise.reject(err)
+    }
+    if (retryCount >= this._options.submissionRetryCount) {
+      const error = new Error('Invalid sequence token, will retry')
+      error.code = 'InvalidSequenceTokenException'
+      return Promise.reject(error)
+    }
+    this._sequenceToken = null
+    return this._doSubmit(batch, retryCount + 1)
+  }
+
+  _putLogEventsAndStoreSequenceToken (batch) {
+    return this._putLogEvents(batch)
+      .then(({nextSequenceToken}) => this._storeSequenceToken(nextSequenceToken))
+  }
+
+  _putLogEvents (batch) {
+    const sequenceToken = this._sequenceToken
     debug('putLogEvents', {batch, sequenceToken})
     const params = {
       logGroupName: this._logGroupName,
@@ -83,14 +112,6 @@ export default class CloudWatchClient {
     return this._client.putLogEvents(params).promise()
   }
 
-  _getSequenceToken () {
-    const now = +new Date()
-    const isStale = (!this._sequenceTokenInfo ||
-      this._sequenceTokenInfo.date + this._options.maxSequenceTokenAge < now)
-    return isStale ? this._fetchAndStoreSequenceToken()
-      : Promise.resolve(this._sequenceTokenInfo.sequenceToken)
-  }
-
   _fetchAndStoreSequenceToken () {
     debug('fetchSequenceToken')
     return this._findLogStream()
@@ -99,8 +120,7 @@ export default class CloudWatchClient {
 
   _storeSequenceToken (sequenceToken) {
     debug('storeSequenceToken', {sequenceToken})
-    const date = +new Date()
-    this._sequenceTokenInfo = {sequenceToken, date}
+    this._sequenceToken = sequenceToken
     return sequenceToken
   }
 

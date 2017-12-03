@@ -54,12 +54,21 @@ const createClient = (options) => {
     clientOptions: null,
     streamsStrategy: streamsStrategies.default,
     groupErrorCode: null,
-    streamErrorCode: false
+    streamErrorCode: false,
+    putRejectionCode: null
   })
   const client = new CloudWatchClient(logGroupName, logStreamName,
     options.clientOptions)
+  let putPromise
+  if (options.putRejectionCode != null) {
+    const err = new Error()
+    err.code = options.putRejectionCode
+    putPromise = Promise.reject(err)
+  } else {
+    putPromise = Promise.resolve({nextSequenceToken: 'token42'})
+  }
   sinon.stub(client._client, 'putLogEvents')
-    .returns(withPromise(Promise.resolve({nextSequenceToken: 'token42'})))
+    .returns(withPromise(putPromise))
   sinon.stub(client._client, 'createLogGroup')
     .returns(withPromise(options.groupErrorCode
       ? Promise.reject(createErrorWithCode(options.groupErrorCode))
@@ -103,6 +112,16 @@ describe('CloudWatchClient', () => {
         ).to.eventually.equal(3)
     })
 
+    it('rejects after retrying upon InvalidSequenceTokenException', () => {
+      const client = createClient({
+        putRejectionCode: 'InvalidSequenceTokenException'
+      })
+      const batch = createBatch(1)
+      return expect(
+          client.submit(batch)
+        ).to.be.rejectedWith('Invalid sequence token, will retry')
+    })
+
     it('rejects if the log stream is not found in a single page', () => {
       const client = createClient({
         streamsStrategy: streamsStrategies.notFound
@@ -121,19 +140,6 @@ describe('CloudWatchClient', () => {
       return expect(
           client.submit(batch)
         ).to.be.rejected
-    })
-  })
-
-  describe('#options.maxSequenceTokenAge', () => {
-    it('caches the sequence token', () => {
-      const client = createClient({
-        clientOptions: {maxSequenceTokenAge: 1000}
-      })
-      return expect(
-          client.submit(createBatch(1))
-            .then(() => client.submit(createBatch(1)))
-            .then(() => client._client.describeLogStreams.calledOnce)
-        ).to.eventually.equal(true)
     })
   })
 

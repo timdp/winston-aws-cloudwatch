@@ -65,16 +65,12 @@ export default class Relay extends EventEmitter {
 
   _onError (err, batch) {
     debug('onError', {error: err})
-    // Expected errors:
-    // - DataAlreadyAcceptedException
-    //   Message: "The given batch of log events has already been accepted."
-    //   Action: Assume the request got replayed and remove the batch.
-    // - InvalidSequenceTokenException
-    //   Message: "The given sequenceToken is invalid."
-    //   Action: Keep the items in the queue and retry next time.
     if (err.code === 'DataAlreadyAcceptedException') {
+      // Assume the request got replayed and remove the batch
       this._queue.remove(batch.length)
-    } else if (err.code !== 'InvalidSequenceTokenException') {
+    } else if (err.code === 'InvalidSequenceTokenException') {
+      // Keep retrying
+    } else {
       this.emit('error', err)
     }
   }

@@ -96,17 +96,5 @@ describe('Relay', () => {
       await delay(submissionInterval * failures.length * 1.1)
       expect(spy.callCount).to.equal(0)
     })
-
-    it('handles InvalidSequenceTokenException errors by retrying', async () => {
-      const submissionInterval = 50
-      const failures = ['InvalidSequenceTokenException', 'InvalidSequenceTokenException']
-      const client = new ClientMock(failures)
-      const relay = new Relay(client, {submissionInterval})
-      relay.start()
-      relay.submit(createItem())
-      expect(client.submitted.length).to.equal(0, 'Submitted too early')
-      await delay(submissionInterval * (failures.length + 1) * 1.1)
-      expect(client.submitted.length).to.equal(1, 'Not submitted')
-    })
   })
 })
