@@ -2,25 +2,26 @@
 
 import _debug from 'debug'
 import AWS from 'aws-sdk'
-import defaults from 'defaults'
 import find from 'lodash.find'
 import CloudWatchEventFormatter from './cloudwatch-event-formatter'
 
 const debug = _debug('winston-aws-cloudwatch:CloudWatchClient')
+
+const DEFAULT_OPTIONS = {
+  awsConfig: null,
+  formatLog: null,
+  formatLogItem: null,
+  createLogGroup: false,
+  createLogStream: false,
+  submissionRetryCount: 1
+}
 
 export default class CloudWatchClient {
   constructor (logGroupName, logStreamName, options) {
     debug('constructor', {logGroupName, logStreamName, options})
     this._logGroupName = logGroupName
     this._logStreamName = logStreamName
-    this._options = defaults(options, {
-      awsConfig: null,
-      formatLog: null,
-      formatLogItem: null,
-      createLogGroup: false,
-      createLogStream: false,
-      submissionRetryCount: 1
-    })
+    this._options = Object.assign({}, DEFAULT_OPTIONS, options)
     this._formatter = new CloudWatchEventFormatter(this._options)
     this._sequenceToken = null
     this._client = new AWS.CloudWatchLogs(this._options.awsConfig)

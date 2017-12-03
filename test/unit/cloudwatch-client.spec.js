@@ -1,6 +1,5 @@
 'use strict'
 
-import defaults from 'defaults'
 import CloudWatchClient from '../../src/cloudwatch-client'
 import LogItem from '../../src/log-item'
 
@@ -50,13 +49,13 @@ const streamsStrategies = {
 }
 
 const createClient = (options) => {
-  options = defaults(options, {
+  options = Object.assign({
     clientOptions: null,
     streamsStrategy: streamsStrategies.default,
     groupErrorCode: null,
     streamErrorCode: false,
     putRejectionCode: null
-  })
+  }, options)
   const client = new CloudWatchClient(logGroupName, logStreamName,
     options.clientOptions)
   let putPromise

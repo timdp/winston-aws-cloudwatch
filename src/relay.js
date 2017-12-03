@@ -2,21 +2,22 @@
 
 import _debug from 'debug'
 import Bottleneck from 'bottleneck'
-import defaults from 'defaults'
 import Queue from './queue'
 import {EventEmitter} from 'events'
 
 const debug = _debug('winston-aws-cloudwatch:Relay')
+
+const DEFAULT_OPTIONS = {
+  submissionInterval: 2000,
+  batchSize: 20
+}
 
 export default class Relay extends EventEmitter {
   constructor (client, options) {
     super()
     debug('constructor', {client, options})
     this._client = client
-    this._options = defaults(options, {
-      submissionInterval: 2000,
-      batchSize: 20
-    })
+    this._options = Object.assign({}, DEFAULT_OPTIONS, options)
     this._limiter = null
     this._queue = null
   }
