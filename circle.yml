@@ -10,6 +10,6 @@ test:
   pre:
     - mkdir -p $CIRCLE_TEST_REPORTS/unit
   override:
-    - yarn run test:lint
+    - nvm use 8 && yarn run test:lint
     - nvm use 6 && MOCHA_FILE=$CIRCLE_TEST_REPORTS/unit/node6.xml yarn run test:ci:unit
     - nvm use 8 && MOCHA_FILE=$CIRCLE_TEST_REPORTS/unit/node8.xml yarn run test:ci
