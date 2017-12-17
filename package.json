@@ -15,7 +15,8 @@
   ],
   "author": "Tim De Pauw <hi@tmdpw.eu> (https://tmdpw.eu/)",
   "engines": {
-    "node": ">=6"
+    "node": ">=6",
+    "yarn": "*"
   },
   "peerDependencies": {
     "winston": "^2.3.1"
