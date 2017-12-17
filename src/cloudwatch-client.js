@@ -2,7 +2,6 @@
 
 import _debug from 'debug'
 import AWS from 'aws-sdk'
-import find from 'lodash.find'
 import CloudWatchEventFormatter from './cloudwatch-event-formatter'
 
 const debug = _debug('winston-aws-cloudwatch:CloudWatchClient')
@@ -134,7 +133,7 @@ export default class CloudWatchClient {
     }
     return this._client.describeLogStreams(params).promise()
       .then(({logStreams, nextToken}) => {
-        const match = find(logStreams,
+        const match = logStreams.find(
           ({logStreamName}) => (logStreamName === this._logStreamName))
         if (match) {
           return match
