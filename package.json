@@ -30,9 +30,9 @@
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
+    "babel-core": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.5.1",
-    "babel-register": "^6.24.1",
     "chai": "^4.0.2",
     "chai-as-promised": "^7.0.0",
     "coveralls": "^3.0.0",
@@ -56,10 +56,10 @@
     "build": "yarn run clean && babel src --out-dir lib",
     "test": "yarn run test:lint && yarn run test:cover",
     "test:lint": "standard",
-    "test:unit": "mocha --compilers js:babel-register test/lib/setup.js test/**/*.spec.js",
+    "test:unit": "mocha --require babel-core/register test/lib/setup.js test/**/*.spec.js",
     "test:cover": "nyc yarn run test:unit",
     "test:ci": "yarn run test:ci:cover && yarn run test:ci:report",
-    "test:ci:cover": "nyc mocha --reporter mocha-junit-reporter --compilers js:babel-register test/lib/setup.js test/**/*.spec.js",
+    "test:ci:cover": "nyc mocha --reporter mocha-junit-reporter --require babel-core/register test/lib/setup.js test/**/*.spec.js",
     "test:ci:report": "nyc report --reporter text-lcov | coveralls",
     "dev": "babel src --out-dir lib --watch"
   },
