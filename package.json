@@ -59,7 +59,8 @@
     "test:unit": "mocha --require babel-core/register test/lib/setup.js test/**/*.spec.js",
     "test:cover": "nyc yarn run test:unit",
     "test:ci": "yarn run test:ci:cover && yarn run test:ci:report",
-    "test:ci:cover": "nyc mocha --reporter mocha-junit-reporter --require babel-core/register test/lib/setup.js test/**/*.spec.js",
+    "test:ci:unit": "mocha --reporter mocha-junit-reporter --require babel-core/register test/lib/setup.js test/**/*.spec.js",
+    "test:ci:cover": "nyc yarn run test:ci:unit",
     "test:ci:report": "nyc report --reporter text-lcov | coveralls",
     "dev": "babel src --out-dir lib --watch"
   },
