@@ -42,7 +42,7 @@
     "nyc": "^11.0.3",
     "rimraf": "^2.6.1",
     "sinon": "^4.1.2",
-    "sinon-chai": "^2.10.0",
+    "sinon-chai": "^3.0.0",
     "standard": "^10.0.2"
   },
   "main": "index.js",
