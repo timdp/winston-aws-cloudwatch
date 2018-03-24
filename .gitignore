@@ -1,6 +1,7 @@
 [Tt]humbs.db
 .DS_Store
 npm-debug.log
+yarn-error.log
 node_modules/
 test-results.xml
 coverage/
