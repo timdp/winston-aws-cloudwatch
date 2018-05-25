@@ -36,7 +36,7 @@
     "chai": "^4.0.2",
     "chai-as-promised": "^7.0.0",
     "coveralls": "^3.0.0",
-    "delay": "^2.0.0",
+    "delay": "^3.0.0",
     "mocha": "^4.0.1",
     "mocha-junit-reporter": "^1.13.0",
     "nyc": "^11.0.3",
