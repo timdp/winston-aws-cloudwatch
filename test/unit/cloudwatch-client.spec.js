@@ -1,7 +1,5 @@
-'use strict'
-
-import CloudWatchClient from '../../src/cloudwatch-client'
-import LogItem from '../../src/log-item'
+const CloudWatchClient = require('../../lib/cloudwatch-client')
+const LogItem = require('../../lib/log-item')
 
 const logGroupName = 'testGroup'
 const logStreamName = 'testStream'

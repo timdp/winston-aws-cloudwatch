@@ -1,6 +1,4 @@
-'use strict'
-
-import LogItem from '../../src/log-item'
+const LogItem = require('../../lib/log-item')
 
 describe('LogItem', () => {
   describe('#date', () => {

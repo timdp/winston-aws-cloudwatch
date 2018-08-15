@@ -1,7 +1,5 @@
-'use strict'
-
-import CloudWatchEventFormatter from '../../src/cloudwatch-event-formatter'
-import LogItem from '../../src/log-item'
+const CloudWatchEventFormatter = require('../../lib/cloudwatch-event-formatter')
+const LogItem = require('../../lib/log-item')
 
 describe('CloudWatchEventFormatter', () => {
   describe('constructor', () => {

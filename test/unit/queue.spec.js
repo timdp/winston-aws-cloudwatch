@@ -1,6 +1,4 @@
-'use strict'
-
-import Queue from '../../src/queue'
+const Queue = require('../../lib/queue')
 
 const createItem = () => ({ callback () {} })
 

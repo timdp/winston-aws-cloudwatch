@@ -15,7 +15,7 @@
   ],
   "author": "Tim De Pauw <hi@tmdpw.eu> (https://tmdpw.eu/)",
   "engines": {
-    "node": ">=6",
+    "node": ">=8",
     "yarn": ">=1.6.0"
   },
   "peerDependencies": {
@@ -23,17 +23,12 @@
   },
   "dependencies": {
     "aws-sdk": "^2.293.0",
-    "babel-runtime": "^6.23.0",
     "bottleneck": "^1.16.0",
     "debug": "^3.1.0",
     "lodash.isempty": "^4.2.1",
     "winston-transport": "^4.2.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-core": "^6.26.3",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.7.0",
     "chai": "^4.0.2",
     "chai-as-promised": "^7.0.0",
     "coveralls": "^3.0.2",
@@ -49,25 +44,20 @@
     "sinon-chai": "^3.2.0",
     "standard": "^10.0.0"
   },
-  "main": "index.js",
+  "main": "lib/index.js",
   "files": [
-    "lib/",
-    "index.js"
+    "lib/"
   ],
   "scripts": {
-    "prepublishOnly": "yarn run build",
-    "clean": "rimraf lib",
-    "build": "yarn run clean && babel src --out-dir lib",
     "test": "yarn run test:lint && yarn run test:cover",
-    "test:lint": "standard '*.js' '{src,test}/**/*.js'",
-    "test:unit": "mocha --require babel-core/register 'test/lib/setup.js' 'test/**/*.spec.js'",
+    "test:lint": "standard '*.js' '{lib,test}/**/*.js'",
+    "test:unit": "mocha 'test/lib/setup.js' 'test/**/*.spec.js'",
     "test:cover": "nyc yarn run test:unit",
     "test:ci": "yarn run test:ci:cover && yarn run test:ci:report",
-    "test:ci:unit": "mocha --reporter mocha-junit-reporter --require babel-core/register 'test/lib/setup.js' 'test/**/*.spec.js'",
+    "test:ci:unit": "mocha --reporter mocha-junit-reporter 'test/lib/setup.js' 'test/**/*.spec.js'",
     "test:ci:cover": "nyc yarn run test:ci:unit",
     "test:ci:report": "nyc report --reporter text-lcov | coveralls",
-    "dev": "babel src --out-dir lib --watch",
-    "format": "prettier-standard '*.js' '{src,test}/**/*.js'",
+    "format": "prettier-standard '{lib,test}/**/*.js'",
     "precommit": "lint-staged"
   },
   "repository": "timdp/winston-aws-cloudwatch",

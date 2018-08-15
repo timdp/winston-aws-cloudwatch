@@ -1,8 +1,6 @@
-'use strict'
-
-import delay from 'delay'
-import ClientMock from '../lib/client-mock'
-import Relay from '../../src/relay'
+const delay = require('delay')
+const ClientMock = require('../lib/client-mock')
+const Relay = require('../../lib/relay')
 
 const createItem = () => ({ callback: sinon.spy() })
 
