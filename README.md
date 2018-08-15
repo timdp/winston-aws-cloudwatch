@@ -8,24 +8,28 @@ A [Winston](https://www.npmjs.com/package/winston) transport for
 ## Usage
 
 ```js
-var CloudWatchTransport = require('winston-aws-cloudwatch')
+const winston = require('winston')
+const CloudWatchTransport = require('winston-aws-cloudwatch')
 
-winston.add(CloudWatchTransport, {
-  logGroupName: '...', // REQUIRED
-  logStreamName: '...', // REQUIRED
-  createLogGroup: true,
-  createLogStream: true,
-  submissionInterval: 2000,
-  submissionRetryCount: 1,
-  batchSize: 20,
-  awsConfig: {
-    accessKeyId: '...',
-    secretAccessKey: '...',
-    region: '...'
-  },
-  formatLog: function (item) {
-    return item.level + ': ' + item.message + ' ' + JSON.stringify(item.meta)
-  }
+const logger = winston.createLogger({
+  transports: [
+    new CloudWatchTransport({
+      logGroupName: '...', // REQUIRED
+      logStreamName: '...', // REQUIRED
+      createLogGroup: true,
+      createLogStream: true,
+      submissionInterval: 2000,
+      submissionRetryCount: 1,
+      batchSize: 20,
+      awsConfig: {
+        accessKeyId: '...',
+        secretAccessKey: '...',
+        region: '...'
+      },
+      formatLog: item =>
+        `${item.level}: ${item.message} ${JSON.stringify(item.meta)}`
+    })
+  ]
 })
 ```
 
