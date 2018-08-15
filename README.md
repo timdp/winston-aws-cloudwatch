@@ -37,7 +37,7 @@ const logger = winston.createLogger({
 
 If, for any reason, logging to CloudWatch should fail, then the transport will
 emit an `error` event. It is recommended that you
-[subscribe to this event](https://www.npmjs.com/package/winston#events-and-callbacks-in-winston)
+[subscribe to this event](https://www.npmjs.com/package/winston#awaiting-logs-to-be-written-in-winston)
 to avoid crashes.
 
 ## But Why?
