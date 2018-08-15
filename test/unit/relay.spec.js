@@ -1,8 +1,6 @@
-'use strict'
-
-import delay from 'delay'
-import ClientMock from '../lib/client-mock'
-import Relay from '../../src/relay'
+const delay = require('delay')
+const ClientMock = require('../lib/client-mock')
+const Relay = require('../../lib/relay')
 
 const createItem = () => ({ callback: sinon.spy() })
 
@@ -19,7 +17,7 @@ describe('Relay', () => {
     it('submits queue items to the client', async () => {
       const submissionInterval = 50
       const client = new ClientMock()
-      const relay = new Relay(client, {submissionInterval})
+      const relay = new Relay(client, { submissionInterval })
       relay.start()
       const items = [createItem(), createItem(), createItem()]
       for (const item of items) {
@@ -32,17 +30,19 @@ describe('Relay', () => {
     it('calls the callback function for every item', async () => {
       const submissionInterval = 50
       const client = new ClientMock()
-      const relay = new Relay(client, {submissionInterval})
+      const relay = new Relay(client, { submissionInterval })
       relay.start()
       const items = [createItem(), createItem(), createItem()]
       for (const item of items) {
         relay.submit(item)
       }
       await delay(submissionInterval * 1.1)
-      expect(items.map((item) => item.callback.calledOnce))
-        .to.deep.equal(new Array(items.length).fill(true))
-      expect(items.map((item) => item.callback.args[0]))
-        .to.deep.equal(new Array(items.length).fill([null, true]))
+      expect(items.map(item => item.callback.calledOnce)).to.deep.equal(
+        new Array(items.length).fill(true)
+      )
+      expect(items.map(item => item.callback.args[0])).to.deep.equal(
+        new Array(items.length).fill([null, true])
+      )
     })
 
     it('throttles submissions', async () => {
@@ -50,7 +50,7 @@ describe('Relay', () => {
       const batchSize = 10
       const batches = 3
       const client = new ClientMock()
-      const relay = new Relay(client, {submissionInterval, batchSize})
+      const relay = new Relay(client, { submissionInterval, batchSize })
       relay.start()
 
       for (let i = 0; i < batchSize * batches; ++i) {
@@ -76,7 +76,7 @@ describe('Relay', () => {
       const failures = ['FAIL', 'FAIL', 'FAIL']
       const spy = sinon.spy()
       const client = new ClientMock(failures)
-      const relay = new Relay(client, {submissionInterval})
+      const relay = new Relay(client, { submissionInterval })
       relay.on('error', spy)
       relay.start()
       relay.submit(createItem())
@@ -89,7 +89,7 @@ describe('Relay', () => {
       const failures = ['DataAlreadyAcceptedException']
       const spy = sinon.spy()
       const client = new ClientMock(failures)
-      const relay = new Relay(client, {submissionInterval})
+      const relay = new Relay(client, { submissionInterval })
       relay.on('error', spy)
       relay.start()
       relay.submit(createItem())

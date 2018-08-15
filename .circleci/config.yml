@@ -1,0 +1,50 @@
+version: 2.0
+
+jobs:
+  node-8:
+    docker:
+      - image: circleci/node:8-stretch
+    working_directory: ~/code
+    steps:
+      - run:
+          name: Install Yarn
+          command: |
+            sudo apt-get update
+            sudo apt-get install apt-transport-https
+            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+            echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+            sudo apt-get update
+            sudo rm -f /usr/local/bin/yarn
+            sudo apt-get install --no-install-recommends yarn=1.9.4-1
+      - run:
+          name: Create test result directory
+          command: mkdir -p /tmp/test-results/unit
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install dependencies
+          command: yarn
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "yarn.lock" }}
+      - run:
+          name: Run tests
+          command: yarn run test:ci
+          environment:
+            MOCHA_FILE: /tmp/test-results/unit/report.xml
+      - store_test_results:
+          path: /tmp/test-results
+          when: always
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: test-results
+          when: always
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - node-8

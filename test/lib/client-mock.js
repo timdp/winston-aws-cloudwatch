@@ -1,4 +1,4 @@
-export default class MockClient {
+class MockClient {
   constructor (failures = []) {
     this._submitted = []
     this._failures = failures.slice()
@@ -20,3 +20,5 @@ export default class MockClient {
     return this._submitted
   }
 }
+
+module.exports = MockClient
