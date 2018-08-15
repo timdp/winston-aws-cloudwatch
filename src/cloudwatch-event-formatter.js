@@ -3,7 +3,7 @@
 import isEmpty from 'lodash.isempty'
 
 export default class CloudWatchEventFormatter {
-  constructor ({formatLog, formatLogItem} = {}) {
+  constructor ({ formatLog, formatLogItem } = {}) {
     if (typeof formatLog === 'function') {
       this.formatLog = formatLog
     } else if (typeof formatLogItem === 'function') {
@@ -19,7 +19,8 @@ export default class CloudWatchEventFormatter {
   }
 
   formatLog (item) {
-    const meta = isEmpty(item.meta) ? ''
+    const meta = isEmpty(item.meta)
+      ? ''
       : ' ' + JSON.stringify(item.meta, null, 2)
     return `[${item.level.toUpperCase()}] ${item.message}${meta}`
   }

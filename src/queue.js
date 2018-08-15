@@ -14,17 +14,17 @@ export default class Queue {
   }
 
   push (item) {
-    debug('push', {item})
+    debug('push', { item })
     this._contents.push(item)
   }
 
   head (num) {
-    debug('head', {num})
+    debug('head', { num })
     return this._contents.slice(0, num)
   }
 
   remove (num) {
-    debug('remove', {num})
+    debug('remove', { num })
     this._contents.splice(0, num)
   }
 }

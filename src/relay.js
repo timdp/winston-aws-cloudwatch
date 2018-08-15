@@ -3,7 +3,7 @@
 import _debug from 'debug'
 import Bottleneck from 'bottleneck'
 import Queue from './queue'
-import {EventEmitter} from 'events'
+import { EventEmitter } from 'events'
 
 const debug = _debug('winston-aws-cloudwatch:Relay')
 
@@ -15,7 +15,7 @@ const DEFAULT_OPTIONS = {
 export default class Relay extends EventEmitter {
   constructor (client, options) {
     super()
-    debug('constructor', {client, options})
+    debug('constructor', { client, options })
     this._client = client
     this._options = Object.assign({}, DEFAULT_OPTIONS, options)
     this._limiter = null
@@ -50,13 +50,14 @@ export default class Relay extends EventEmitter {
     }
     const batch = this._queue.head(this._options.batchSize)
     debug(`submit: submitting ${batch.length} item(s)`)
-    return this._client.submit(batch)
-      .then(() => this._onSubmitted(batch), (err) => this._onError(err, batch))
+    return this._client
+      .submit(batch)
+      .then(() => this._onSubmitted(batch), err => this._onError(err, batch))
       .then(() => this._scheduleSubmission())
   }
 
   _onSubmitted (batch) {
-    debug('onSubmitted', {batch})
+    debug('onSubmitted', { batch })
     this._queue.remove(batch.length)
     for (let i = 0; i < batch.length; ++i) {
       const item = batch[i]
@@ -65,7 +66,7 @@ export default class Relay extends EventEmitter {
   }
 
   _onError (err, batch) {
-    debug('onError', {error: err})
+    debug('onError', { error: err })
     if (err.code === 'DataAlreadyAcceptedException') {
       // Assume the request got replayed and remove the batch
       this._queue.remove(batch.length)

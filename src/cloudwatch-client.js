@@ -17,7 +17,7 @@ const DEFAULT_OPTIONS = {
 
 export default class CloudWatchClient {
   constructor (logGroupName, logStreamName, options) {
-    debug('constructor', {logGroupName, logStreamName, options})
+    debug('constructor', { logGroupName, logStreamName, options })
     this._logGroupName = logGroupName
     this._logStreamName = logStreamName
     this._options = Object.assign({}, DEFAULT_OPTIONS, options)
@@ -28,15 +28,15 @@ export default class CloudWatchClient {
   }
 
   submit (batch) {
-    debug('submit', {batch})
-    return this._initialize()
-      .then(() => this._doSubmit(batch, 0))
+    debug('submit', { batch })
+    return this._initialize().then(() => this._doSubmit(batch, 0))
   }
 
   _initialize () {
     if (this._initializing == null) {
-      this._initializing = this._maybeCreateLogGroup()
-        .then(() => this._maybeCreateLogStream())
+      this._initializing = this._maybeCreateLogGroup().then(() =>
+        this._maybeCreateLogStream()
+      )
     }
     return this._initializing
   }
@@ -48,8 +48,10 @@ export default class CloudWatchClient {
     const params = {
       logGroupName: this._logGroupName
     }
-    return this._client.createLogGroup(params).promise()
-      .catch((err) => this._allowResourceAlreadyExistsException(err))
+    return this._client
+      .createLogGroup(params)
+      .promise()
+      .catch(err => this._allowResourceAlreadyExistsException(err))
   }
 
   _maybeCreateLogStream () {
@@ -60,12 +62,14 @@ export default class CloudWatchClient {
       logGroupName: this._logGroupName,
       logStreamName: this._logStreamName
     }
-    return this._client.createLogStream(params).promise()
-      .catch((err) => this._allowResourceAlreadyExistsException(err))
+    return this._client
+      .createLogStream(params)
+      .promise()
+      .catch(err => this._allowResourceAlreadyExistsException(err))
   }
 
   _allowResourceAlreadyExistsException (err) {
-    return (err.code === 'ResourceAlreadyExistsException')
+    return err.code === 'ResourceAlreadyExistsException'
       ? Promise.resolve()
       : Promise.reject(err)
   }
@@ -73,11 +77,11 @@ export default class CloudWatchClient {
   _doSubmit (batch, retryCount) {
     return this._maybeUpdateSequenceToken()
       .then(() => this._putLogEventsAndStoreSequenceToken(batch))
-      .catch((err) => this._handlePutError(err, batch, retryCount))
+      .catch(err => this._handlePutError(err, batch, retryCount))
   }
 
   _maybeUpdateSequenceToken () {
-    return (this._sequenceToken != null)
+    return this._sequenceToken != null
       ? Promise.resolve()
       : this._fetchAndStoreSequenceToken()
   }
@@ -96,17 +100,18 @@ export default class CloudWatchClient {
   }
 
   _putLogEventsAndStoreSequenceToken (batch) {
-    return this._putLogEvents(batch)
-      .then(({nextSequenceToken}) => this._storeSequenceToken(nextSequenceToken))
+    return this._putLogEvents(batch).then(({ nextSequenceToken }) =>
+      this._storeSequenceToken(nextSequenceToken)
+    )
   }
 
   _putLogEvents (batch) {
     const sequenceToken = this._sequenceToken
-    debug('putLogEvents', {batch, sequenceToken})
+    debug('putLogEvents', { batch, sequenceToken })
     const params = {
       logGroupName: this._logGroupName,
       logStreamName: this._logStreamName,
-      logEvents: batch.map((item) => this._formatter.formatLogItem(item)),
+      logEvents: batch.map(item => this._formatter.formatLogItem(item)),
       sequenceToken
     }
     return this._client.putLogEvents(params).promise()
@@ -114,27 +119,31 @@ export default class CloudWatchClient {
 
   _fetchAndStoreSequenceToken () {
     debug('fetchSequenceToken')
-    return this._findLogStream()
-      .then(({uploadSequenceToken}) => this._storeSequenceToken(uploadSequenceToken))
+    return this._findLogStream().then(({ uploadSequenceToken }) =>
+      this._storeSequenceToken(uploadSequenceToken)
+    )
   }
 
   _storeSequenceToken (sequenceToken) {
-    debug('storeSequenceToken', {sequenceToken})
+    debug('storeSequenceToken', { sequenceToken })
     this._sequenceToken = sequenceToken
     return sequenceToken
   }
 
   _findLogStream (nextToken) {
-    debug('findLogStream', {nextToken})
+    debug('findLogStream', { nextToken })
     const params = {
       logGroupName: this._logGroupName,
       logStreamNamePrefix: this._logStreamName,
       nextToken
     }
-    return this._client.describeLogStreams(params).promise()
-      .then(({logStreams, nextToken}) => {
+    return this._client
+      .describeLogStreams(params)
+      .promise()
+      .then(({ logStreams, nextToken }) => {
         const match = logStreams.find(
-          ({logStreamName}) => (logStreamName === this._logStreamName))
+          ({ logStreamName }) => logStreamName === this._logStreamName
+        )
         if (match) {
           return match
         }
