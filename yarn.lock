@@ -427,9 +427,10 @@ bcrypt-pbkdf@^1.0.0:
   dependencies:
     tweetnacl "^0.14.3"
 
-bottleneck@^1.16.0:
-  version "1.16.0"
-  resolved "https://registry.yarnpkg.com/bottleneck/-/bottleneck-1.16.0.tgz#d6ce13808527afc80b69092f15606655e5b21f1a"
+bottleneck@^2.15.0:
+  version "2.15.0"
+  resolved "https://registry.yarnpkg.com/bottleneck/-/bottleneck-2.15.0.tgz#538ec3a32f0e94a06e934bcb2080eb2c4c901c5a"
+  integrity sha512-6acQdvF7HfkbyDQAalnnsY5HGrrDrJ0QYie1/iL/IOch5oxhNVPRjqkIvOeCx4i6QyFi+ubxED/QRB1QWmWCJA==
 
 brace-expansion@^1.1.7:
   version "1.1.8"
