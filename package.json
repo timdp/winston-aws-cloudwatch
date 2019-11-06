@@ -22,7 +22,7 @@
     "winston": "^3.0.0"
   },
   "dependencies": {
-    "aws-sdk": "^2.293.0",
+    "aws-sdk": "^2.566.0",
     "bottleneck": "^1.16.0",
     "debug": "^3.1.0",
     "lodash.isempty": "^4.2.1",
